@@ -66,61 +66,69 @@
                         </p>
                         
                         <h2 class="section-heading">Blink LED</h2>
-                        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-                        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-                        <blockquote class="blockquote">The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.</blockquote>
-                        <p>Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.</p>
+                        <p> The first part of this lab is to blink the LED on the Artemis board using the provided example code from IDE. 
+                            The video below shows the LED blinks periodically.
+                        </p>
                         
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/ixaHscGOPCk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Example Blink LED program running on Artemis board.</span>
                         
                         
                         <h2 class="section-heading">Serial Output</h2>
-                        <p>As we got further and further away, it [the Earth] diminished in size. Finally it shrank to the size of a marble, the most beautiful you can imagine. That beautiful, warm, living object looked so fragile, so delicate, that if you touched it with a finger it would crumble and fall apart. Seeing this has to change a man.</p>
-                        <a href="#!"><img class="img-fluid" src="assets/img/post-sample-image.jpg" alt="..." /></a>
-                        <span class="caption text-muted">To go places and do things that have never been done before – that’s what living is all about.</span>
-                        <p>Space, the final frontier. These are the voyages of the Starship Enterprise. Its five-year mission: to explore strange new worlds, to seek out new life and new civilizations, to boldly go where no man has gone before.</p>
-                        <p>As I stand out here in the wonders of the unknown at Hadley, I sort of realize there’s a fundamental truth to our nature, Man must explore, and this is exploration at its greatest.</p>
+                        <p> The second part of this lab is to test the Serial port communication function between the board and the laptop. The Serial communication is 
+                            realized using example code from IDE.
+                        </p>
+                        
+                        <p> As the video below demonstrates, some words and sentences were typed into Serial Monitor and they were echoed on the screen to demonstrate the function
+                            works properly.
+                        </p>
                         
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/aAMnr_aszis" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Example serial program running on Artemis board.</span>
                         
                         
                         <h2 class="section-heading">Analog Read</h2>
-                        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-                        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-                        <blockquote class="blockquote">The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.</blockquote>
-                        <p>Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.</p>
+                        <p> The third part is to test the temperature sensor on the Artemis board and the function to read analog inputs from sensors and convert them into 
+                            digital form and display on the screen.
+                        </p>
+                        
+                        <p> The function was achieved by using the example code from IDE, and was verified by putting finger on the Artemis board to try to increase the board temperature.
+                            According to the video below, it is shown that initially the temperature sensor gave a reading over 33000, after a finger was put on the board, the temperature output rised to
+                            over 34000 gradually, which means the temperature sensor works well.
+                        </p>
                         
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/4pmdTbcdaCA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Example program to get output from temperature sensor on Artemis board.</span>                        
                         
                         
                         <h2 class="section-heading">Microphone Output</h2>
-                        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-                        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-                        <blockquote class="blockquote">The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.</blockquote>
-                        <p>Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.</p>
+                        <p> This part is to test the onboard Pulse Density Microphone. The example code from IDE conducts FFT on the audio signals, extract and print out the highest frequency.
+                        </p>
+                        
+                        <p> As shown in the video, when the frequency generator changed the frequency, the printed frequency displayed on the screen detected by Artemis board changed correspondingly, despite
+                            there was a slight difference (only a few Hertz), probably due to FFT computation error in the example program. But in general, both the onboard microphone and the example program worked well.
+                        </p>
                         
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/x8B48wt4giQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Example program to measure the loudest frequency recorded by the Pulse Density Microphone.</span> 
                         
                         
                         <h2 class="section-heading">Musical "A" Note Detection</h2>
-                        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-                        <p>There can be no thought of finishing for ‘aiming for the stars.’ Both figuratively and literally, it is a task to occupy the generations. And no matter how much progress one makes, there is always the thrill of just beginning.</p>
-                        <blockquote class="blockquote">The dreams of yesterday are the hopes of today and the reality of tomorrow. Science has not yet mastered prophecy. We predict too much for the next year and yet far too little for the next ten.</blockquote>
-                        <p>Spaceflights cannot be stopped. This is not the work of any one man or even a group of men. It is a historical process which mankind is carrying out in accordance with the natural laws of human development.</p>
+                        <p> The final task is to blink the onboard LED when the musical "A" note is detected. It needs to combine program from 'Blink LED' and 'Microphone Output' and add an 'if' statement to achieve this function.
+                        </p>
+                        
+                        <p> According to Wikipedia, the frequency of musical "A" note is around 440 Hz, while considering the FFT computation error mentioned in last section, a frequency range was set in the 'if' statement instead of the exact 440 Hz frequency.
+                            As the video shows, 448 Hz was set on the frequency generator to represent the "A" note sound and after the sound was detected, the onboard LED started to blink, and the detected frequency shown on the screen was 446 Hz which was within 
+                            the range between 440 Hz - 450 Hz setting in the 'if' statement.
+                        </p>
                         
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/POtAfDnD40E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Modified program to blink LED when musical note "A" is detected.</span>
                         
                         
                         <p>
-                            Placeholder text by
-                            <a href="http://spaceipsum.com/">Space Ipsum</a>
-                            &middot; Images by
-                            <a href="https://www.flickr.com/photos/nasacommons/">NASA on The Commons</a>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
                         </p>
                     </div>
                 </div>
