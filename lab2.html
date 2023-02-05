@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
+        <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
+        <title>Fast Robots: Lab 1</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">ECE 5160 · Fast Robots</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me & Project</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Lab1:</h1>
+                            <h1>The Artemis board</h1>
+                            <h2 class="subheading">Setup and get familiar with the Arduino IDE and the Artemis board</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="about.html">Zhongqi Tao</a>
+                                on January 31, 2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        
+                        <p>The purpose of the first lab is to get familiar with the Artemis nano board and the Arduino IDE. Example codes from IDE are used to verify the Artemis board works properly.
+                        </p>
+                        
+                        <p>At the end of this lab, several functions including blink the LED, read/write serial messages over USB, display the output from the onboard temperature sensor, 
+                           and measure the loudest frequency recorded by the Pulse Density Microphone are achieved using example codes. The board is programmed to blink LED when musical "A" note (frequency around 440 Hz) is detected.
+                        </p>
+                        
+                        <h2 class="section-heading">Blink LED</h2>
+                        <p> The first part of this lab is to blink the LED on the Artemis board using the provided example code from IDE. 
+                            The video below shows the LED blinks periodically.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/ixaHscGOPCk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Example Blink LED program running on Artemis board.</span>
+                        
+                        
+                        <h2 class="section-heading">Serial Output</h2>
+                        <p> The second part of this lab is to test the Serial port communication function between the board and the laptop. The Serial communication is 
+                            realized using example code from IDE.
+                        </p>
+                        
+                        <p> As the video below demonstrates, some words and sentences were typed into Serial Monitor and they were echoed on the screen to demonstrate the function
+                            works properly.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/aAMnr_aszis" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Example serial program running on Artemis board.</span>
+                        
+                        
+                        <h2 class="section-heading">Analog Read</h2>
+                        <p> The third part is to test the temperature sensor on the Artemis board and the function to read analog inputs from sensors and convert them into 
+                            digital form and display on the screen.
+                        </p>
+                        
+                        <p> The function was achieved by using the example code from IDE, and was verified by putting finger on the Artemis board to try to increase the board temperature.
+                            According to the video below, it is shown that initially the temperature sensor gave a reading over 33000, after a finger was put on the board, the temperature output rised to
+                            over 34000 gradually, which means the temperature sensor works well.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/4pmdTbcdaCA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Example program to get output from temperature sensor on Artemis board.</span>                        
+                        
+                        
+                        <h2 class="section-heading">Microphone Output</h2>
+                        <p> This part is to test the onboard Pulse Density Microphone. The example code from IDE conducts FFT on the audio signals, extract and print out the highest frequency.
+                        </p>
+                        
+                        <p> As shown in the video, when the frequency generator changed the frequency, the printed frequency displayed on the screen detected by Artemis board changed correspondingly, despite
+                            there was a slight difference (only a few Hertz), probably due to FFT computation error in the example program. But in general, both the onboard microphone and the example program worked well.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/x8B48wt4giQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Example program to measure the loudest frequency recorded by the Pulse Density Microphone.</span> 
+                        
+                        
+                        <h2 class="section-heading">Musical "A" Note Detection</h2>
+                        <p> The final task is to blink the onboard LED when the musical "A" note is detected. It needs to combine program from 'Blink LED' and 'Microphone Output' and add an 'if' statement to achieve this function.
+                        </p>
+                        
+                        <p> According to Wikipedia, the frequency of musical "A" note is around 440 Hz, while considering the FFT computation error mentioned in last section, a frequency range was set in the 'if' statement instead of the exact 440 Hz frequency.
+                            As the video shows, 448 Hz was set on the frequency generator to represent the "A" note sound and after the sound was detected, the onboard LED started to blink, and the detected frequency shown on the screen was 446 Hz which was within 
+                            the range between 440 Hz - 450 Hz setting in the 'if' statement.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/POtAfDnD40E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Modified program to blink LED when musical note "A" is detected.</span>
+                        
+                        
+                        <p>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/zt88/Fast-Robots">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Fast Robots 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
