@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
         <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
-        <title>Fast Robots: Lab 1</title>
+        <title>Fast Robots: Lab 2</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -39,13 +39,13 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <div class="post-heading">
-                            <h1>Lab1:</h1>
-                            <h1>The Artemis board</h1>
-                            <h2 class="subheading">Setup and get familiar with the Arduino IDE and the Artemis board</h2>
+                            <h1>Lab2:</h1>
+                            <h1>Bluetooth</h1>
+                            <h2 class="subheading">Establish communication between computer and the Artemis board</h2>
                             <span class="meta">
                                 Posted by
                                 <a href="about.html">Zhongqi Tao</a>
-                                on January 31, 2023
+                                on February 7, 2023
                             </span>
                         </div>
                     </div>
@@ -58,13 +58,19 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         
-                        <p>The purpose of the first lab is to get familiar with the Artemis nano board and the Arduino IDE. Example codes from IDE are used to verify the Artemis board works properly.
+                        <p>The purpose of this lab is to establish communication between computer and the Artemis board by using Bluetooth Low Energy (BLE). Skeleton codes of Python applied 
+                           on computer end and Arduino programming language on the Artemis side are provided by the fantanstic teaching group with a detailed <a href="https://cei-lab.github.io/FastRobots-2023/Lab2.html" class="link-primary">tutorial</a> for 
+                           setting up the lab environment and explaning the functions and libraries applied in skeleton codes. 
                         </p>
                         
-                        <p>At the end of this lab, several functions including blink the LED, read/write serial messages over USB, display the output from the onboard temperature sensor, 
-                           and measure the loudest frequency recorded by the Pulse Density Microphone are achieved using example codes. The board is programmed to blink LED when musical "A" note (frequency around 440 Hz) is detected.
+                        <p>Based on the provided functions, the working principle this communication protocal is learnt and more functions are developed to establish a framework for sending data via Bluetooth that will be useful in future labs.
+                        </p>    
+                        
+                        <p>THis report gives a brief introduction environment setup, followed by lab tasks demonstration with concise description.
                         </p>
                         
+                        
+                        <h1> Prelab </h1>
                         <h2 class="section-heading">Blink LED</h2>
                         <p> The first part of this lab is to blink the LED on the Artemis board using the provided example code from IDE. 
                             The video below shows the LED blinks periodically.
