@@ -72,44 +72,56 @@
                         
                         <p></p>
                         <h1> Prelab </h1>
-                        <h2 class="section-heading">· Environment Setup</h2>
-                        <p> The first part of this lab is to blink the LED on the Artemis board using the provided example code from IDE. 
-                            The video below shows the LED blinks periodically.
+                        <h2 class="section-heading">- Environment Setup</h2>
+                        <p> To establish a stable connection between computer and Artemis board, the required lab environment must be set up on the computer. I install both Python 3 and Arduino IDE on my computer based on Ubuntu Linux operating system following the commands provided by prelab tutorial, so that to make the it more convenient to program both computer side and Artemis board using the same computer.
                         </p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/ixaHscGOPCk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        <span class="caption text-muted">Example Blink LED program running on Artemis board.</span>
-                        
-                        
-                        <h2 class="section-heading">Serial Output</h2>
-                        <p> The second part of this lab is to test the Serial port communication function between the board and the laptop. The Serial communication is 
-                            realized using example code from IDE.
+                        <p> A virtual environment named <code>“FastRobots_ble”</code> is created to isolate the Python interpreter, libraries and scripts needed by the project from the main system of the computer.
                         </p>
                         
-                        <p> As the video below demonstrates, some words and sentences were typed into Serial Monitor and they were echoed on the screen to demonstrate the function
-                            works properly.
+                        <p>Eventually, the virtual environment is activated and the required Python packages are installed under virtual environment.
                         </p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/aAMnr_aszis" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        <span class="caption text-muted">Example serial program running on Artemis board.</span>
-                        
-                        
-                        <h2 class="section-heading">Analog Read</h2>
-                        <p> The third part is to test the temperature sensor on the Artemis board and the function to read analog inputs from sensors and convert them into 
-                            digital form and display on the screen.
+                        <p>After setting up the lab environment, by implementing the provided codebase skeleton, the MAC address of Artemis board is printed on the Serial Monitor.
                         </p>
                         
-                        <p> The function was achieved by using the example code from IDE, and was verified by putting finger on the Artemis board to try to increase the board temperature.
-                            According to the video below, it is shown that initially the temperature sensor gave a reading over 33000, after a finger was put on the board, the temperature output rised to
-                            over 34000 gradually, which means the temperature sensor works well.
+                        picture 1
+                        
+                        <p>To differentiate different kinds of data sent between the Artemis and computer, a new UUID (Universally Unique Identifiers) is generated and modified in the 2nd line of configuration file. 
+                        </p>
+                        
+                        picture 2
+                        
+                        
+                        
+                        <h2 class="section-heading">- Codebase Explanation</h2>
+                        <p> Bluetooth LE sends data in a relatively low speed with low energy consumption using radio waves. Based on UUID match, computer and Artemis can build connection by BLE stably.
+                        </p>
+                        
+                        <p> The codebase initializes the BLE service on the Artemis board based on UUID. It also provides functions to update characteristics when changes are detected, and function skeleton to help define user’s own functions, so that information transmission can be achieved.
+                        </p>
+                        
+                        
+                        
+                        <p></p>
+                        <h1> Lab Tasks </h1>
+                        <p> In order to test robot’s sensors more effectively in future labs, it is critical to have a working wireless debugging system based on BLE service. The following tasks ensures receiving timestamped messages from the Artemis board.
+                        </p>
+                        
+
+                        <h2 class="section-heading">Task 1: Echo Command</h2>
+                        <p> To verify the effectiveness of connection and message transmission ability between computer and Artemis. An ‘Echo’ function is developed to receive a string sent by computer on Artemis, then Artemis replies back to computer with an enhanced string which is printed on both computer side and Artemis Serial Monitor, as the video below demonstrates.
+                        </p>
+                        
+                        <p> The provided <code>‘EString’</code> class in the codebase skeleton can handle string concatenation effectively, which helps to enhance the received string sent by computer on the Artemis side. Then the initialized <code>‘tx_characteristic_string’</code> can write the enhanced string to computer side.
                         </p>
                         
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/4pmdTbcdaCA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Example program to get output from temperature sensor on Artemis board.</span>                        
                         
                         
-                        <h2 class="section-heading">Microphone Output</h2>
-                        <p> This part is to test the onboard Pulse Density Microphone. The example code from IDE conducts FFT on the audio signals, extract and print out the highest frequency.
+                        <h2 class="section-heading">Task 2: Get Time Command</h2>
+                        <p> This task is basically similar to the echo task, while the function <code>‘GET_TIME_MILLIS’</code> must be defined on both Artemis and computer side so that they can recognize the command. This function reads the current time since the Artemis onboard clock is started when the board boots up, and send the time back to computer. The time read from Artemis onboard clock is obtained using <code>‘millis()’</code> function. The transmission process is shown in video below.
                         </p>
                         
                         <p> As shown in the video, when the frequency generator changed the frequency, the printed frequency displayed on the screen detected by Artemis board changed correspondingly, despite
@@ -120,17 +132,94 @@
                         <span class="caption text-muted">Example program to measure the loudest frequency recorded by the Pulse Density Microphone.</span> 
                         
                         
-                        <h2 class="section-heading">Musical "A" Note Detection</h2>
-                        <p> The final task is to blink the onboard LED when the musical "A" note is detected. It needs to combine program from 'Blink LED' and 'Microphone Output' and add an 'if' statement to achieve this function.
+                        <h2 class="section-heading">Task 3: Notification Handler</h2>
+                        <p> Notification handler is a kind of callback function which enables automatically update of transmission process whenever the transmitted message changes. In this task, a callback function is defined on computer side to receive the string value sent by Artemis and decode the byte array to float type. The callback function can be implemented using <code>‘ble.start_notify’</code>. 
                         </p>
                         
-                        <p> According to Wikipedia, the frequency of musical "A" note is around 440 Hz, while considering the FFT computation error mentioned in last section, a frequency range was set in the 'if' statement instead of the exact 440 Hz frequency.
-                            As the video shows, 448 Hz was set on the frequency generator to represent the "A" note sound and after the sound was detected, the onboard LED started to blink, and the detected frequency shown on the screen was 446 Hz which was within 
-                            the range between 440 Hz - 450 Hz setting in the 'if' statement.
+                        <p> As video shows, every half second the string value changes, the callback function is called to decode it into float and print it out. Finally, the process can be suspended by function <code>‘ble.stop_notify’</code>.
                         </p>
                         
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/POtAfDnD40E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Modified program to blink LED when musical note "A" is detected.</span>
+                        
+                        
+                        <h2 class="section-heading">Task 4: Get Temperature Command</h2>
+                        <p> In this task, the temperature sensor on the Artemis is used to record current temperature once per second. The temperature data is sent after timestamp recorded by onboard clock. The function <code>‘GET_TEMP_5s’</code> is defined on Artemis to record time and temperature in a pair and send them to computer once per second individually, instead of sending the five recorded pairs as a single string to prevent exceeding characteristic size limit.
+                        </p>
+                        
+                        <p> A new callback function is defined on computer side to receive the string and print it out as long as the string sent by Artemis changes. The video below demonstrates how this function works.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/POtAfDnD40E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Modified program to blink LED when musical note "A" is detected.</span>
+                        
+                        
+                        <h2 class="section-heading">Task 5: Get Temperature Rapidly</h2>
+                        <p> This task is quite similar to previous task, while instead of having a five-second- sampling once per second, at least 50 pairs of readings are required within 5 seconds. Therefore, the delay time of each sampling process is modified to 0.1 seconds to have 50 pairs of readings in total within 5 seconds.
+                        </p>
+                        
+                        <p> The function <code>‘GET_TEMP_5s_RAPID’</code> is defined on Artemis. Still, to prevent violating characteristic size limit, the string is cleared after each pair of ‘time|temperature' reading has been sent. After every 10 pairs of readings have been sent, there is a blank line appended to make the printed-out format on computer side more neatly.
+                        </p>
+                        
+                        <p> The callback function for task 5 on computer side is basically the same as the one for task 4: as long as the string message received from Artemis has changed, callback function is invoked to decode and print out the reading. Video below demonstrates how it works.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/POtAfDnD40E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Modified program to blink LED when musical note "A" is detected.</span>
+                        
+                        
+                        <h2 class="section-heading">Task 6: Limitations</h2>
+                        <p> 16-bit (2 bytes) values taken at 150 Hz (1/150 s) within 5 seconds means 1.5 kb data in total. The Artemis board has 384 kB of RAM. Assume all of the RAM can be used to transmit data, then there are 256 sets (1280 seconds in total) of 1.5 kb data sampled in that way can be stored and sent in total before Artemis runs out of its memory.
+                        </p>
+                        
+                        
+                        <p></p>
+                        <h1> Additional Tasks </h1>
+                        
+                        <h2 class="section-heading">- Effective Data Rate and Overhead</h2>
+                        <p> To calculate the data rate for 5-byte replies and 120-byte replies respectively, two similar functions to echo 5-byte string and 120-byte string are defined in Artemis and two callback functions are defined in computer side to receive the replies.
+                        </p>
+                        
+                        <p> For both 5-byte and 120-byte replies, the transmission iterates for 30 times and the average transmission times and average data rates are computed. It needs to be noticed that both start time and end time of the transmission process are stored in lists respectively and transmission time is calculated by doing subtraction between the two lists.
+                        </p>
+                        
+                        <p> The average transmission time and data rate for 5-byte replies and 120-byte replies are shown in video below.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/POtAfDnD40E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Modified program to blink LED when musical note "A" is detected.</span>
+                        
+                        <p> As the video shows, there are basically no significant difference between transmission time of 5-byte replies and 120-byte replies (only 0.01s), while the data rate increases dramatically.
+                        </p>
+                        
+                        <p> To further verify this trend, various reply sizes range from 1 byte to 140 byte are tested. As video shows, the experiment process is basically similar to previous tests for 5-byte and 120-byte, and eventually data rate for various data sizes are plotted as below.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/POtAfDnD40E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Modified program to blink LED when musical note "A" is detected.</span>
+                        
+                        <p> The figure shows that despite fluctuations, generally, data rate increases as reply data size increases.
+                        </p>
+                        
+                        picture 3
+                        
+                        <p> Due to these experiments, it is possible that transmission time is independent from data size, since for low byte replies, the data rate is lower as well, it can be deduced that smaller packets actually introduce more overheads. While for longer reply data size, the data rate is much higher, indicating that larger packets contain less overheads.
+                        </p>
+
+                        
+                        <h2 class="section-heading">- Reliability </h2>
+                        <p> To test reliability of the transmission, a new function <code>‘reliability’</code> is defined on Artemis to receive <code>‘interval’</code> time from computer and hence provides reply to computer after a  period of interval time.
+                        </p>
+                        
+                        <p> A callback function is defined on computer side to receive and store all the replies sent from Artemis, so that to verify the accuracy of the replies.
+                        </p>
+                        
+                        <p> As the video below shows, as interval time becomes shorter, the replies are sent back to computer at a higher rate from Artemis. Eventually, there all the data sent back are received correctly without missing anything. Therefore, the transmission is 100% reliable.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/POtAfDnD40E" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Modified program to blink LED when musical note "A" is detected.</span>
+                        
                         
                         
                         <p>
