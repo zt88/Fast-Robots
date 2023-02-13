@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
+        <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
+        <title>Fast Robots: Lab 2</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">ECE 5160 · Fast Robots</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me & Project</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Lab2:</h1>
+                            <h1>Bluetooth</h1>
+                            <h2 class="subheading">Establish communication between computer and the Artemis board</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="about.html">Zhongqi Tao</a>
+                                on February 7, 2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        
+                        <p>The purpose of this lab is to establish communication between computer and the Artemis board by using Bluetooth Low Energy (BLE). Skeleton codes of Python applied 
+                           on computer end and Arduino programming language on the Artemis side are provided by the fantanstic teaching group with a detailed <a href="https://cei-lab.github.io/FastRobots-2023/Lab2.html" class="link-primary">tutorial</a> for 
+                           setting up the lab environment and explaning the functions and libraries applied in skeleton codes. 
+                        </p>
+                        
+                        <p>Based on the provided functions, the working principle this communication protocal is learnt and more functions are developed to establish a framework for sending data via Bluetooth that will be useful in future labs.
+                        </p>    
+                        
+                        <p>This report gives a brief introduction of environment setup, followed by lab tasks demonstration with concise description.
+                        </p>
+                        
+                        
+                        <p></p>
+                        <h1> Prelab </h1>
+                        <h2 class="section-heading">- Environment Setup</h2>
+                        <p> To establish a stable connection between computer and Artemis board, the required lab environment must be set up on the computer. I install both Python 3 and Arduino IDE on my computer based on Ubuntu Linux operating system following the commands provided by prelab tutorial, so that to make the it more convenient to program both computer side and Artemis board using the same computer.
+                        </p>
+                        
+                        <p> A virtual environment named <code>“FastRobots_ble”</code> is created to isolate the Python interpreter, libraries and scripts needed by the project from the main system of the computer.
+                        </p>
+                        
+                        <p>Eventually, the virtual environment is activated and the required Python packages are installed under virtual environment.
+                        </p>
+                        
+                        <p>After setting up the lab environment, by implementing the provided codebase skeleton, the MAC address of Artemis board is printed on the Serial Monitor.
+                        </p>
+                        
+                        <img src="lab2_imgs/1.png" height="200px" width="600px">
+                        
+                        <p>To differentiate different kinds of data sent between the Artemis and computer, a new UUID (Universally Unique Identifiers) is generated and modified in the 2nd line of configuration file. 
+                        </p>
+                        
+                        <img src="lab2_imgs/2.png" height="200px" width="600px">
+                        
+                        
+                        
+                        <h2 class="section-heading">- Codebase Explanation</h2>
+                        <p> Bluetooth LE sends data in a relatively low speed with low energy consumption using radio waves. Based on UUID match, computer and Artemis can build connection by BLE stably.
+                        </p>
+                        
+                        <p> The codebase initializes the BLE service on the Artemis board based on UUID. It also provides functions to update characteristics when changes are detected, and function skeleton to help define user’s own functions, so that information transmission can be achieved.
+                        </p>
+                        
+                        
+                        
+                        <p></p>
+                        <h1> Lab Tasks </h1>
+                        <p> In order to test robot’s sensors more effectively in future labs, it is critical to have a working wireless debugging system based on BLE service. The following tasks ensures receiving timestamped messages from the Artemis board.
+                        </p>
+                        
+
+                        <h2 class="section-heading">Task 1: Echo Command</h2>
+                        <p> To verify the effectiveness of connection and message transmission ability between computer and Artemis. An ‘Echo’ function is developed to receive a string sent by computer on Artemis, then Artemis replies back to computer with an enhanced string which is printed on both computer side and Artemis Serial Monitor, as the video below demonstrates.
+                        </p>
+                        
+                        <p> The provided <code>‘EString’</code> class in the codebase skeleton can handle string concatenation effectively, which helps to enhance the received string sent by computer on the Artemis side. Then the initialized <code>‘tx_characteristic_string’</code> can write the enhanced string to computer side.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/x3RVhgMc9Sg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>                        
+                        
+                        
+                        <h2 class="section-heading">Task 2: Get Time Command</h2>
+                        <p> This task is basically similar to the echo task, while the function <code>‘GET_TIME_MILLIS’</code> must be defined on both Artemis and computer side so that they can recognize the command. This function reads the current time since the Artemis onboard clock is started when the board boots up, and send the time back to computer. The time read from Artemis onboard clock is obtained using <code>‘millis()’</code> function. The transmission process is shown in video below.
+                        </p>
+                        
+                        <p> As shown in the video, when the frequency generator changed the frequency, the printed frequency displayed on the screen detected by Artemis board changed correspondingly, despite
+                            there was a slight difference (only a few Hertz), probably due to FFT computation error in the example program. But in general, both the onboard microphone and the example program worked well.
+                        </p>
+                        
+                       <iframe width="640" height="360" src="https://www.youtube.com/embed/b1a0zmFZLv8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> 
+                        
+                        
+                        <h2 class="section-heading">Task 3: Notification Handler</h2>
+                        <p> Notification handler is a kind of callback function which enables automatically update of transmission process whenever the transmitted message changes. In this task, a callback function is defined on computer side to receive the string value sent by Artemis and decode the byte array to float type. The callback function can be implemented using <code>‘ble.start_notify’</code>. 
+                        </p>
+                        
+                        <p> As video shows, every half second the string value changes, the callback function is called to decode it into float and print it out. Finally, the process can be suspended by function <code>‘ble.stop_notify’</code>.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/CTN-zB32Iu0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        
+                        <h2 class="section-heading">Task 4: Get Temperature Command</h2>
+                        <p> In this task, the temperature sensor on the Artemis is used to record current temperature once per second. The temperature data is sent after timestamp recorded by onboard clock. The function <code>‘GET_TEMP_5s’</code> is defined on Artemis to record time and temperature in a pair and send them to computer once per second individually, instead of sending the five recorded pairs as a single string to prevent exceeding characteristic size limit.
+                        </p>
+                        
+                        <p> A new callback function is defined on computer side to receive the string and print it out as long as the string sent by Artemis changes. The video below demonstrates how this function works.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/Ruxkv6K9MRI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        
+                        <h2 class="section-heading">Task 5: Get Temperature Rapidly</h2>
+                        <p> This task is quite similar to previous task, while instead of having a five-second- sampling once per second, at least 50 pairs of readings are required within 5 seconds. Therefore, the delay time of each sampling process is modified to 0.1 seconds to have 50 pairs of readings in total within 5 seconds.
+                        </p>
+                        
+                        <p> The function <code>‘GET_TEMP_5s_RAPID’</code> is defined on Artemis. Still, to prevent violating characteristic size limit, the string is cleared after each pair of ‘time|temperature' reading has been sent. After every 10 pairs of readings have been sent, there is a blank line appended to make the printed-out format on computer side more neatly.
+                        </p>
+                        
+                        <p> The callback function for task 5 on computer side is basically the same as the one for task 4: as long as the string message received from Artemis has changed, callback function is invoked to decode and print out the reading. Video below demonstrates how it works.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/zHOsV1uIw10" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        
+                        <h2 class="section-heading">Task 6: Limitations</h2>
+                        <p> 16-bit (2 bytes) values taken at 150 Hz (1/150 s) within 5 seconds means 1.5 kb data in total. The Artemis board has 384 kB of RAM. Assume all of the RAM can be used to transmit data, then there are 256 sets (1280 seconds in total) of 1.5 kb data sampled in that way can be stored and sent in total before Artemis runs out of its memory.
+                        </p>
+                        
+                        
+                        <p></p>
+                        <h1> Additional Tasks </h1>
+                        
+                        <h2 class="section-heading">- Effective Data Rate and Overhead</h2>
+                        <p> To calculate the data rate for 5-byte replies and 120-byte replies respectively, two similar functions to echo 5-byte string and 120-byte string are defined in Artemis and two callback functions are defined in computer side to receive the replies.
+                        </p>
+                        
+                        <p> For both 5-byte and 120-byte replies, the transmission iterates for 30 times and the average transmission times and average data rates are computed. It needs to be noticed that both start time and end time of the transmission process are stored in lists respectively and transmission time is calculated by doing subtraction between the two lists.
+                        </p>
+                        
+                        <p> The average transmission time and data rate for 5-byte replies and 120-byte replies are shown in video below.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/6aHl3MzVxm4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> As the video shows, there are basically no significant difference between transmission time of 5-byte replies and 120-byte replies (only 0.01s), while the data rate increases dramatically.
+                        </p>
+                        
+                        <p> To further verify this trend, various reply sizes range from 1 byte to 140 byte are tested. As video shows, the experiment process is basically similar to previous tests for 5-byte and 120-byte, and eventually data rate for various data sizes are plotted as below.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/xFleE2DxlpA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> The figure shows that despite fluctuations, generally, data rate increases as reply data size increases.
+                        </p>
+                        
+                        <img src="lab2_imgs/3.png" height="500px" width="500px">
+                        
+                        <p> Due to these experiments, it is possible that transmission time is independent from data size, since for low byte replies, the data rate is lower as well, it can be deduced that smaller packets actually introduce more overheads. While for longer reply data size, the data rate is much higher, indicating that larger packets contain less overheads.
+                        </p>
+
+                        
+                        <h2 class="section-heading">- Reliability </h2>
+                        <p> To test reliability of the transmission, a new function <code>‘reliability’</code> is defined on Artemis to receive <code>‘interval’</code> time from computer and hence provides reply to computer after a  period of interval time.
+                        </p>
+                        
+                        <p> A callback function is defined on computer side to receive and store all the replies sent from Artemis, so that to verify the accuracy of the replies.
+                        </p>
+                        
+                        <p> As the video below shows, as interval time becomes shorter, the replies are sent back to computer at a higher rate from Artemis. Eventually, there all the data sent back are received correctly without missing anything. Therefore, the transmission is 100% reliable.
+                        </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/jegLODPvyP8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        
+                        
+                        <p>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/zt88/Fast-Robots">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Fast Robots 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
