@@ -216,47 +216,62 @@
                         <p></p>
                         <h1> Additional Tasks </h1>
                         
-                        <h2 class="section-heading">- Effective Data Rate and Overhead</h2>
-                        <p> To calculate the data rate for 5-byte replies and 120-byte replies respectively, two similar functions to echo 5-byte string and 120-byte string are defined in Artemis and two callback functions are defined in computer side to receive the replies.
+                        <h2 class="section-heading">- Infrared transmission based sensor</h2>
+                        <p> Distance sensors such as IR distance sensors and ToF sensors are infrared transmission based sensors.
                         </p>
                         
-                        <p> For both 5-byte and 120-byte replies, the transmission iterates for 30 times and the average transmission times and average data rates are computed. It needs to be noticed that both start time and end time of the transmission process are stored in lists respectively and transmission time is calculated by doing subtraction between the two lists.
+                        <p> Generally, an IR sensor includes a infrared LED to emit beam to the environment, the distance measurement is then based on receiving reflected beam from obstacles to compute the distance. Despite its attractive price and relatively good performance, it is difficult to use an IR sensor to measure a long distance, since the longer the distance, the smaller the angle and hence more difficult to detect the angle and compute distance.
+                            It is also sensitive to surface colors, textures and ambient light condition.
                         </p>
                         
-                        <p> The average transmission time and data rate for 5-byte replies and 120-byte replies are shown in video below.
+                        <p> ToF sensor emits a PWM (pulse width modulated) signal to the environment and records the time until the reflecting signal is received, hence to calculate the distance. Since its using wave as media, the speed is close to light speed and it is almost insensitive to surface colors, textures or ambient light.
                         </p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/6aHl3MzVxm4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
-                        <p> As the video shows, there are basically no significant difference between transmission time of 5-byte replies and 120-byte replies (only 0.01s), while the data rate increases dramatically.
-                        </p>
-                        
-                        <p> To further verify this trend, various reply sizes range from 1 byte to 140 byte are tested. As video shows, the experiment process is basically similar to previous tests for 5-byte and 120-byte, and eventually data rate for various data sizes are plotted as below.
-                        </p>
-                        
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
-                        <p> The figure shows that despite fluctuations, generally, data rate increases as reply data size increases.
-                        </p>
-                        
-                        <img src="lab2_imgs/3.png" height="500px" width="500px">
-                        
-                        <p> Due to these experiments, it is possible that transmission time is independent from data size, since for low byte replies, the data rate is lower as well, it can be deduced that smaller packets actually introduce more overheads. While for longer reply data size, the data rate is much higher, indicating that larger packets contain less overheads.
-                        </p>
 
                         
-                        <h2 class="section-heading">- Reliability </h2>
-                        <p> To test reliability of the transmission, a new function <code>‘reliability’</code> is defined on Artemis to receive <code>‘interval’</code> time from computer and hence provides reply to computer after a  period of interval time.
+                        <h2 class="section-heading">- Sensitivity of sensors to colors & textures </h2>
+                        <p> To test the sensor's sensitivity to colors, the obstacles with black, white and orange surface colors are chosen, with a fixed distance of 100 mm.
                         </p>
                         
-                        <p> A callback function is defined on computer side to receive and store all the replies sent from Artemis, so that to verify the accuracy of the replies.
+                        <p> The result for surface with black color is shown as below.
                         </p>
                         
-                        <p> As the video below shows, as interval time becomes shorter, the replies are sent back to computer at a higher rate from Artemis. Eventually, there all the data sent back are received correctly without missing anything. Therefore, the transmission is 100% reliable.
+                        <img src="lab3_imgs/black.png" style="width:100%">
+                        
+                        <p> The result for surface with white color is shown as below.
                         </p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/jegLODPvyP8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <img src="lab3_imgs/white.png" style="width:100%">
                         
+                        <p> The result for surface with orange color is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/orange.png" style="width:100%">
+                        
+                        <p> Based on these experiment results, the ToF sensor is not sensitive to different colors.
+                        </p>
+                        
+                        
+                        <p> To test the sensor's sensitivity to textures, the obstacles made by wool, plastic and board are chosen, with a fixed distance of 100 mm.
+                        </p>
+                        
+                        <p> The result for obstacle made by wool is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/wool.png" style="width:100%">
+                        
+                        <p> The result for obstacle made by plastic is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/plastic.png" style="width:100%">
+                        
+                        <p> The result for obstacle made by board is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/board.png" style="width:100%">
+                        
+                        <p> According to the experiment results, the ToF sensor is not sensitive to different textures as well.
+                        </p>
                         
                         
                         <p>
