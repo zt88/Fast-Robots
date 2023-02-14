@@ -159,7 +159,7 @@
                         
                         
                         
-                        <h2 class="section-heading">Task 3: 2 ToF sensors & sensor speed</h2>
+                        <h2 class="section-heading">Task 3: Connecting 2 ToF sensors</h2>
                         <p> To connect two ToF sensors and get them work simultaneously, apart from modifying I2C address for one of them, the example code <code>ReadDistance</code> is further extended to support measuring and printing out distances from both ToF sensors. The outputs from two ToF sensors working simultaneously are shown below.
                         </p>
                         
@@ -170,6 +170,8 @@
                         
                         <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
                         
+                        
+                        <h2 class="section-heading">Task 4: ToF sensor speed</h2>
                         <p> According to the datasheet(link), sampling frequency of ToF sensor can be up to 50 Hz (20ms interval). Based on SparkFun_VL53L1X_Arduino_Library, the function <code>getIntermeasurementPeriod()</code> can return measurement interval in millisecond. Hence the default sensor speed is shown as below.
                         </p>
                         
@@ -186,7 +188,7 @@
                         </p>
                          
                         
-                        <h2 class="section-heading">Task 4: Data transmission via BLE</h2>
+                        <h2 class="section-heading">Task 5: Data transmission via BLE</h2>
                         <p> The final task is to transmit the sensors' collected data from Artemis to computer side via Bluetooth. 
                         </p>
                         
