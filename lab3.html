@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
         <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
-        <title>Fast Robots: Lab 2</title>
+        <title>Fast Robots: Lab 3</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -39,13 +39,13 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <div class="post-heading">
-                            <h1>Lab2:</h1>
-                            <h1>Bluetooth</h1>
-                            <h2 class="subheading">Establish communication between computer and the Artemis board</h2>
+                            <h1>Lab3:</h1>
+                            <h1>Time of Flight Sensors</h1>
+                            <h2 class="subheading">Equip the robot with sensors.</h2>
                             <span class="meta">
                                 Posted by
                                 <a href="about.html">Zhongqi Tao</a>
-                                on February 7, 2023
+                                on February 14, 2023
                             </span>
                         </div>
                     </div>
@@ -58,114 +58,120 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         
-                        <p>The purpose of this lab is to establish communication between computer and the Artemis board by using Bluetooth Low Energy (BLE). Skeleton codes of Python applied 
-                           on computer end and Arduino programming language on the Artemis side are provided by the fantanstic teaching group with a detailed <a href="https://cei-lab.github.io/FastRobots-2023/Lab2.html" class="link-primary">tutorial</a> for 
-                           setting up the lab environment and explaning the functions and libraries applied in skeleton codes. 
+                        <p>The purpose of this lab is to equip the robot with sensors, at this moment, we are implementing two ToF (Time of Flight) distance sensors to measure the distance between obstacles and the robot.
                         </p>
                         
-                        <p>Based on the provided functions, the working principle this communication protocal is learnt and more functions are developed to establish a framework for sending data via Bluetooth that will be useful in future labs.
+                        <p>The two ToF sensors are soldered and connected to the Artemis firstly and tested using example codes from libraries. Based on the example functions provided, the I2C communication protocol and working functions of ToF sesors are studied. 
                         </p>    
                         
-                        <p>This report gives a brief introduction of environment setup, followed by lab tasks demonstration with concise description.
+                        <p>To further investigate the performance of the sensor, some experiments regarding distance range, surface color of obstacle and texture of obstacle are conducted. 
                         </p>
+                        
+                        <p>Eventually, programs are developed on both Artemis and computer side to get time-stamped data recorded from ToF sensors to be transmitted and display on the computer via Bluetooth.</p>
                         
                         
                         <p></p>
                         <h1> Prelab </h1>
-                        <h2 class="section-heading">- Environment Setup</h2>
-                        <p> To establish a stable connection between computer and Artemis board, the required lab environment must be set up on the computer. I install both Python 3 and Arduino IDE on my computer based on Ubuntu Linux operating system following the commands provided by prelab tutorial, so that to make the it more convenient to program both computer side and Artemis board using the same computer.
+                        <h2 class="section-heading">- I2C address & connection of two ToF sensors</h2>
+                        <p> According to the <a href="https://cdn.sparkfun.com/assets/8/9/9/a/6/VL53L0X_DS.pdf" class="link-primary">datasheet</a> of ToF sensor, its default I2C address is 0x52. However, after connecting one ToF sensor with Artemis through the QWIIC breakout board, and print the device address using example code, the address of QWIIC is 0x69 and the address of ToF sensor is 0x29.
                         </p>
                         
-                        <p> A virtual environment named <code>“FastRobots_ble”</code> is created to isolate the Python interpreter, libraries and scripts needed by the project from the main system of the computer.
+                        <p> After soldering the cables to the sensors, each of the two ToF sensors is connected with Artemis individually and tests its distance measurement performance using example codes. While since both sensors share the same default I2C address, when connected and work simultaneously, only one of them can communicate with its master device (Artemis) via the default address.
                         </p>
                         
-                        <p>Eventually, the virtual environment is activated and the required Python packages are installed under virtual environment.
-                        </p>
-                        
-                        <p>After setting up the lab environment, by implementing the provided codebase skeleton, the MAC address of Artemis board is printed on the Serial Monitor.
+                        <p>Therefore, to use 2 ToF sensors simultaneously, one of the sensor's I2C address must be modified, so that master board can communicate with two ToF sensors via different addresses. To modify the address, the XSHUT pin of both sensors are connected to pin A0 and A1 on Artemis respectively. Then, the second sensor can be manually disabled by writting a digital <code>LOW</code> to its XSHUT, while the first sensor receives a digital <code>HIGH</code> on its XSHUT pin to remain enabled, so that the address of the first sensor can be mannualy modified using <code>setI2CAddress()</code> function. Finally, we can bring back the first sensor by changing the digital signal to its XSHUT pin to <code>HIGH</code>.
                         </p>
                         
                         <img src="lab2_imgs/1.png" height="200px" width="600px">
                         
-                        <p>To differentiate different kinds of data sent between the Artemis and computer, a new UUID (Universally Unique Identifiers) is generated and modified in the 2nd line of configuration file. 
+                        
+                        
+                        <h2 class="section-heading">- sensor wiring and placement</h2>
+                        <p> Since I only have two ToF sensors, I would like to place one on the front of the robot while the other one on the left side. This means the obstacles from backward and right side can be missed. The wiring diagram is sketched as below.
                         </p>
-                        
-                        <img src="lab2_imgs/2.png" height="200px" width="600px">
-                        
-                        
-                        
-                        <h2 class="section-heading">- Codebase Explanation</h2>
-                        <p> Bluetooth LE sends data in a relatively low speed with low energy consumption using radio waves. Based on UUID match, computer and Artemis can build connection by BLE stably.
-                        </p>
-                        
-                        <p> The codebase initializes the BLE service on the Artemis board based on UUID. It also provides functions to update characteristics when changes are detected, and function skeleton to help define user’s own functions, so that information transmission can be achieved.
-                        </p>
-                        
                         
                         
                         <p></p>
-                        <h1> Lab Tasks </h1>
-                        <p> In order to test robot’s sensors more effectively in future labs, it is critical to have a working wireless debugging system based on BLE service. The following tasks ensures receiving timestamped messages from the Artemis board.
-                        </p>
-                        
+                        <h1> Lab Tasks </h1> 
 
-                        <h2 class="section-heading">Task 1: Echo Command</h2>
-                        <p> To verify the effectiveness of connection and message transmission ability between computer and Artemis. An ‘Echo’ function is developed to receive a string sent by computer on Artemis, then Artemis replies back to computer with an enhanced string which is printed on both computer side and Artemis Serial Monitor, as the video below demonstrates.
+                        <h2 class="section-heading">Task 1: Sensor soldering & connection</h2>
+                        <p> The single sensor connection with Artemis is shown as picture below, following with a screenshot of Artemis scanning for I2C device address. It is shown that two adresses are detected, 0x69 for QWIIC board and 0x29 is for ToF sensor.
                         </p>
                         
-                        <p> The provided <code>‘EString’</code> class in the codebase skeleton can handle string concatenation effectively, which helps to enhance the received string sent by computer on the Artemis side. Then the initialized <code>‘tx_characteristic_string’</code> can write the enhanced string to computer side.
+                        <img src="lab2_imgs/1.png" height="200px" width="600px">
+                        
+                        <p> It needs to be noticed that the default address for ToF sensor is 0x52 which is 1010010 in binary, while it becomes 0x29 which is 101001 as printed. It seems Artemis shifts the LSB bit of the default address and allocate it as 0x29 for ToF sensor.
                         </p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/x3RVhgMc9Sg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>                        
                         
-                        
-                        <h2 class="section-heading">Task 2: Get Time Command</h2>
-                        <p> This task is basically similar to the echo task, while the function <code>‘GET_TIME_MILLIS’</code> must be defined on both Artemis and computer side so that they can recognize the command. This function reads the current time since the Artemis onboard clock is started when the board boots up, and send the time back to computer. The time read from Artemis onboard clock is obtained using <code>‘millis()’</code> function. The transmission process is shown in video below.
+                        <h2 class="section-heading">Task 2: Sensor measurement test</h2>
+                        <p> According to the <a href="https://cdn.sparkfun.com/assets/e/1/8/4/e/VL53L1X_API.pdf" class="link-primary">manual</a> of ToF sensor, there are three distance modes, while only two of them: Short / Long distance mode are applicable in Arduino ide becase of the library implemented. Since the short distance mode has better ambient immunity and its maximum working distance is up to 1.3 meters which is quite enough to detect obstacles around the robot, it is chosen to be the work mode in future labs.
                         </p>
                         
-                        <p> As shown in the video, when the frequency generator changed the frequency, the printed frequency displayed on the screen detected by Artemis board changed correspondingly, despite
-                            there was a slight difference (only a few Hertz), probably due to FFT computation error in the example program. But in general, both the onboard microphone and the example program worked well.
+                        table
+                        
+                        <p> The picture below shows the distance measurement tool to measure the actual distance as reference to compare the performance of the ToF sensor. A simple program is developed to record readings from a ToF sensor for 100 times and compute the average measurement as the final distance, as the video demonstrates.
                         </p>
                         
-                       <iframe width="640" height="360" src="https://www.youtube.com/embed/b1a0zmFZLv8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> 
+                        picture
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/b1a0zmFZLv8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> 
                         
-                        
-                        <h2 class="section-heading">Task 3: Notification Handler</h2>
-                        <p> Notification handler is a kind of callback function which enables automatically update of transmission process whenever the transmitted message changes. In this task, a callback function is defined on computer side to receive the string value sent by Artemis and decode the byte array to float type. The callback function can be implemented using <code>‘ble.start_notify’</code>. 
+                        <p> The figures for both actual distance and measured distance are recorded as distance varies. A visualization of the measurement performance goes as the actual distance increases is shown below.
                         </p>
                         
-                        <p> As video shows, every half second the string value changes, the callback function is called to decode it into float and print it out. Finally, the process can be suspended by function <code>‘ble.stop_notify’</code>.
+                        <p> I measured and recorded 12 different distances for this plot. As the figure shows, the measured distance basically overlaps with the reference line for shorter distances. While as actual distance becomes longer up to 1250 mm, the performance starts to be disappointing, and becomes even worse after actual distance reaches over 1500 mm. This result basically matches the statement from datasheet that the working range for short distance mode is up to 1.3m.
                         </p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/CTN-zB32Iu0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
-                        
-                        <h2 class="section-heading">Task 4: Get Temperature Command</h2>
-                        <p> In this task, the temperature sensor on the Artemis is used to record current temperature once per second. The temperature data is sent after timestamp recorded by onboard clock. The function <code>‘GET_TEMP_5s’</code> is defined on Artemis to record time and temperature in a pair and send them to computer once per second individually, instead of sending the five recorded pairs as a single string to prevent exceeding characteristic size limit.
+                        <p> Generally, the short distance mode gives a satisfying performance within distance below 1250 mm which is quite acceptable for this lab.
                         </p>
                         
-                        <p> A new callback function is defined on computer side to receive the string and print it out as long as the string sent by Artemis changes. The video below demonstrates how this function works.
+                        
+                        
+                        <h2 class="section-heading">Task 3: 2 ToF sensors & sensor speed</h2>
+                        <p> To connect two ToF sensors and get them work simultaneously, apart from modifying I2C address for one of them, the example code <code>ReadDistance</code> is further extended to support measuring and printing out distances from both ToF sensors.
                         </p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/Ruxkv6K9MRI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        picture: code to print both readings
                         
-                        
-                        <h2 class="section-heading">Task 5: Get Temperature Rapidly</h2>
-                        <p> This task is quite similar to previous task, while instead of having a five-second- sampling once per second, at least 50 pairs of readings are required within 5 seconds. Therefore, the delay time of each sampling process is modified to 0.1 seconds to have 50 pairs of readings in total within 5 seconds.
+                        <p> As the code snippet shows, a <code>while</code> loop is applied to ensure only if both sensors get ready to send data, the distances are recorded, otherwise the loop will delay the system.
                         </p>
                         
-                        <p> The function <code>‘GET_TEMP_5s_RAPID’</code> is defined on Artemis. Still, to prevent violating characteristic size limit, the string is cleared after each pair of ‘time|temperature' reading has been sent. After every 10 pairs of readings have been sent, there is a blank line appended to make the printed-out format on computer side more neatly.
+                        <p> According to the datasheet(link), sampling frequency of ToF sensor can be up to 50 Hz (20ms interval). Based on SparkFun_VL53L1X_Arduino_Library, the function <code>getIntermeasurementPeriod()</code> can return measurement interval in millisecond. Hence the default sensor speed is shown as below.
                         </p>
                         
-                        <p> The callback function for task 5 on computer side is basically the same as the one for task 4: as long as the string message received from Artemis has changed, callback function is invoked to decode and print out the reading. Video below demonstrates how it works.
+                        picture:sampling, default
+                        
+                        <p> As mentioned before, since the presence of <code>while</code> loop that waits until both sensor get ready to send data can slow down the frequency of printing out the measured distances, the interval between two printed readings may not represent the real sampling frequency of the sensor effectively.
+                        </p>
+                         
+                        
+                        <h2 class="section-heading">Task 4: Data transmission via BLE</h2>
+                        <p> The final task is to transmit the sensors' collected data from Artemis to computer side via Bluetooth. 
                         </p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/zHOsV1uIw10" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
-                        
-                        <h2 class="section-heading">Task 6: Limitations</h2>
-                        <p> 16-bit (2 bytes) values taken at 150 Hz (1/150 s) within 5 seconds means 1.5 kb data in total. The Artemis board has 384 kB of RAM. Assume all of the RAM can be used to transmit data, then there are 256 sets (1280 seconds in total) of 1.5 kb data sampled in that way can be stored and sent in total before Artemis runs out of its memory.
+                        <p> <b>on the Artemis side</b>, a new class <code>ToF_Sensor.h</code> is defined which has two functions: <code>init()</code> to initialize both sensors and change one of its I2C address; <code>measure_dist</code> to conduct distance measurement and store results to a <code>EString: tx_estring_value2</code>. The main body of this class is basically copy of Task 3 codes.
                         </p>
+                        
+                        <p> Similar to lab 2, a new command case <code>tof_data</code> is created to call the function <code>sensors.measure_dist()</code> to conduct the distance measurement, send the string <code>sensors.tx_estring_value2</code> storing measurement to computer side, and print out the measurement on the Serial Monitor.
+                        </p>
+                        
+                        	picture:case
+                        
+                        <p> <b>on the computer side</b>, a callback function is defined to receive the string containing time-stamped readings from both sensors. 
+                        </p>
+                        
+                        picture:callback
+                        
+                        <p> In order to print the time v.s. distance graph, the timestamp, sensor1 reading and sensor2 reading need to be extracted from the <code>ToF_data</code> string respectively. A function is defined loop  for 10 seconds and extract time, measured distance from first and second sensors to store them to three lists.
+                        </p>
+                        
+                        picture: extract
+                        
+                        <p> Eventually, according to the data from three lists, the time v.s. distance plot can be sketched as below.
+                        </p>
+                        
+                        picture:9
+                        
                         
                         
                         <p></p>
