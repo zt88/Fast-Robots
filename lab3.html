@@ -82,7 +82,7 @@
                         <p>Therefore, to use 2 ToF sensors simultaneously, one of the sensor's I2C address must be modified, so that master board can communicate with two ToF sensors via different addresses. To modify the address, the XSHUT pin of both sensors are connected to pin A0 and A1 on Artemis respectively. Then, the second sensor can be manually disabled by writting a digital <code>LOW</code> to its XSHUT, while the first sensor receives a digital <code>HIGH</code> on its XSHUT pin to remain enabled, so that the address of the first sensor can be mannualy modified using <code>setI2CAddress()</code> function. Finally, we can bring back the first sensor by changing the digital signal to its XSHUT pin to <code>HIGH</code>.
                         </p>
                         
-                        <img src="lab2_imgs/1.png" height="200px" width="600px">
+                        <img src="lab3_imgs/modify.png" height="800px" width="600px">
                         
                         
                         
@@ -98,7 +98,14 @@
                         <p> The single sensor connection with Artemis is shown as picture below, following with a screenshot of Artemis scanning for I2C device address. It is shown that two adresses are detected, 0x69 for QWIIC board and 0x29 is for ToF sensor.
                         </p>
                         
-                        <img src="lab2_imgs/1.png" height="200px" width="600px">
+                        <div class="row">
+                              <div class="column">
+                                <img src="lab3_imgs/hardware.png" style="width:100%">
+                              </div>
+                              <div class="column">
+                                <img src="lab3_imgs/address.png" style="width:100%">
+                              </div>
+                        </div> 
                         
                         <p> It needs to be noticed that the default address for ToF sensor is 0x52 which is 1010010 in binary, while it becomes 0x29 which is 101001 as printed. It seems Artemis shifts the LSB bit of the default address and allocate it as 0x29 for ToF sensor.
                         </p>
@@ -108,16 +115,39 @@
                         <p> According to the <a href="https://cdn.sparkfun.com/assets/e/1/8/4/e/VL53L1X_API.pdf" class="link-primary">manual</a> of ToF sensor, there are three distance modes, while only two of them: Short / Long distance mode are applicable in Arduino ide becase of the library implemented. Since the short distance mode has better ambient immunity and its maximum working distance is up to 1.3 meters which is quite enough to detect obstacles around the robot, it is chosen to be the work mode in future labs.
                         </p>
                         
-                        table
+                         <table>
+                          <tr>
+                            <th>Possible distance modes</th>
+                            <th>Maximum distance</th>
+                            <th>Benefit</th>
+                          </tr>
+                          <tr>
+                            <td>Short</td>
+                            <td>Medium</td>
+                            <td>Long(default)</td>
+                          </tr>
+                          <tr>
+                            <td>Up to 1.3 m</td>
+                            <td>Up to 3 m</td>
+                            <td>Up to 4 m</td>
+                          </tr>
+                          <tr>
+                            <td>Better ambient immunity</td>
+                            <td>  </td>
+                            <td>Maximum distance</td>
+                          </tr>
+                        </table> 
                         
                         <p> The picture below shows the distance measurement tool to measure the actual distance as reference to compare the performance of the ToF sensor. A simple program is developed to record readings from a ToF sensor for 100 times and compute the average measurement as the final distance, as the video demonstrates.
                         </p>
                         
-                        picture
+                        <img src="lab3_imgs/measure_tool.png" style="width:100%">
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/b1a0zmFZLv8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> 
                         
                         <p> The figures for both actual distance and measured distance are recorded as distance varies. A visualization of the measurement performance goes as the actual distance increases is shown below.
                         </p>
+                        
+                        <img src="lab3_imgs/distance.png" style="width:100%">
                         
                         <p> I measured and recorded 12 different distances for this plot. As the figure shows, the measured distance basically overlaps with the reference line for shorter distances. While as actual distance becomes longer up to 1250 mm, the performance starts to be disappointing, and becomes even worse after actual distance reaches over 1500 mm. This result basically matches the statement from datasheet that the working range for short distance mode is up to 1.3m.
                         </p>
@@ -131,7 +161,7 @@
                         <p> To connect two ToF sensors and get them work simultaneously, apart from modifying I2C address for one of them, the example code <code>ReadDistance</code> is further extended to support measuring and printing out distances from both ToF sensors.
                         </p>
                         
-                        picture: code to print both readings
+                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
                         
                         <p> As the code snippet shows, a <code>while</code> loop is applied to ensure only if both sensors get ready to send data, the distances are recorded, otherwise the loop will delay the system.
                         </p>
@@ -139,7 +169,14 @@
                         <p> According to the datasheet(link), sampling frequency of ToF sensor can be up to 50 Hz (20ms interval). Based on SparkFun_VL53L1X_Arduino_Library, the function <code>getIntermeasurementPeriod()</code> can return measurement interval in millisecond. Hence the default sensor speed is shown as below.
                         </p>
                         
-                        picture:sampling, default
+                        <div class="row">
+                              <div class="column">
+                                <img src="lab3_imgs/sampling.png" style="width:100%">
+                              </div>
+                              <div class="column">
+                                <img src="lab3_imgs/default.png" style="width:100%">
+                              </div>
+                        </div> 
                         
                         <p> As mentioned before, since the presence of <code>while</code> loop that waits until both sensor get ready to send data can slow down the frequency of printing out the measured distances, the interval between two printed readings may not represent the real sampling frequency of the sensor effectively.
                         </p>
@@ -155,22 +192,22 @@
                         <p> Similar to lab 2, a new command case <code>tof_data</code> is created to call the function <code>sensors.measure_dist()</code> to conduct the distance measurement, send the string <code>sensors.tx_estring_value2</code> storing measurement to computer side, and print out the measurement on the Serial Monitor.
                         </p>
                         
-                        	picture:case
+                        	<img src="lab3_imgs/case.png" style="width:100%">
                         
                         <p> <b>on the computer side</b>, a callback function is defined to receive the string containing time-stamped readings from both sensors. 
                         </p>
                         
-                        picture:callback
+                        <img src="lab3_imgs/callback.png" style="width:100%">
                         
                         <p> In order to print the time v.s. distance graph, the timestamp, sensor1 reading and sensor2 reading need to be extracted from the <code>ToF_data</code> string respectively. A function is defined loop  for 10 seconds and extract time, measured distance from first and second sensors to store them to three lists.
                         </p>
                         
-                        picture: extract
+                        <img src="lab3_imgs/extract.png" style="width:100%">
                         
                         <p> Eventually, according to the data from three lists, the time v.s. distance plot can be sketched as below.
                         </p>
                         
-                        picture:9
+                        <img src="lab3_imgs/9.png" style="width:100%">
                         
                         
                         
