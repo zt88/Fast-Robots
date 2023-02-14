@@ -192,7 +192,7 @@
                         <p> The final task is to transmit the sensors' collected data from Artemis to computer side via Bluetooth. 
                         </p>
                         
-                        <p> <b>on the Artemis side</b>, a new class <code>ToF_Sensor.h</code> is defined which has two functions: <code>init()</code> to initialize both sensors and change one of its I2C address; <code>measure_dist</code> to conduct distance measurement and store results to a <code>EString: tx_estring_value2</code>. The main body of this class is basically copy of Task 3 codes.
+                        <p> <b>On the Artemis side</b>, a new class <code>ToF_Sensor.h</code> is defined which has two functions: <code>init()</code> to initialize both sensors and change one of its I2C address; <code>measure_dist</code> to conduct distance measurement and store results to a <code>EString: tx_estring_value2</code>. The main body of this class is basically copy of Task 3 codes.
                         </p>
                         
                         <p> Similar to lab 2, a new command case <code>tof_data</code> is created to call the function <code>sensors.measure_dist()</code> to conduct the distance measurement, send the string <code>sensors.tx_estring_value2</code> storing measurement to computer side, and print out the measurement on the Serial Monitor.
@@ -200,7 +200,7 @@
                         
                         	<img src="lab3_imgs/case.png" style="width:100%">
                         
-                        <p> <b>on the computer side</b>, a callback function is defined to receive the string containing time-stamped readings from both sensors. 
+                        <p> <b>On the computer side</b>, a callback function is defined to receive the string containing time-stamped readings from both sensors. 
                         </p>
                         
                         <img src="lab3_imgs/callback.png" style="width:100%">
