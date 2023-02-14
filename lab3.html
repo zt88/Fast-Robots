@@ -160,13 +160,15 @@
                         
                         
                         <h2 class="section-heading">Task 3: 2 ToF sensors & sensor speed</h2>
-                        <p> To connect two ToF sensors and get them work simultaneously, apart from modifying I2C address for one of them, the example code <code>ReadDistance</code> is further extended to support measuring and printing out distances from both ToF sensors.
+                        <p> To connect two ToF sensors and get them work simultaneously, apart from modifying I2C address for one of them, the example code <code>ReadDistance</code> is further extended to support measuring and printing out distances from both ToF sensors. The outputs from two ToF sensors working simultaneously are shown below.
+                        </p>
+                        
+                        <img src="lab3_imgs/8.png" style="width:100%">
+                        
+                        <p> As below the code snippet of getting readings from both ToF sensors shows, a <code>while</code> loop is applied to ensure only if both sensors get ready to send data, the distances are recorded, otherwise the loop will delay the system.
                         </p>
                         
                         <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
-                        
-                        <p> As the code snippet shows, a <code>while</code> loop is applied to ensure only if both sensors get ready to send data, the distances are recorded, otherwise the loop will delay the system.
-                        </p>
                         
                         <p> According to the datasheet(link), sampling frequency of ToF sensor can be up to 50 Hz (20ms interval). Based on SparkFun_VL53L1X_Arduino_Library, the function <code>getIntermeasurementPeriod()</code> can return measurement interval in millisecond. Hence the default sensor speed is shown as below.
                         </p>
