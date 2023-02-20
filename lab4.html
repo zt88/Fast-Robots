@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
         <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
-        <title>Fast Robots: Lab 3</title>
+        <title>Fast Robots: Lab 4</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -39,13 +39,13 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <div class="post-heading">
-                            <h1>Lab3:</h1>
-                            <h1>Time of Flight Sensors</h1>
-                            <h2 class="subheading">Equip the robot with sensors.</h2>
+                            <h1>Lab4:</h1>
+                            <h1>IMU</h1>
+                            <h2 class="subheading">Add the IMU (Accelerometer & Gyroscope) to the robot.</h2>
                             <span class="meta">
                                 Posted by
                                 <a href="about.html">Zhongqi Tao</a>
-                                on February 14, 2023
+                                on February 21, 2023
                             </span>
                         </div>
                     </div>
@@ -58,161 +58,132 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         
-                        <p>The purpose of this lab is to equip the robot with sensors, at this moment, we are implementing two ToF (Time of Flight) distance sensors to measure the distance between obstacles and the robot.
+                        <p>The purpose of this lab is to add the IMU which is equipped with accelerometer and gyroscope to the robot to measure the real-time roll and pitch angles when the robot is running. Besides, at the end of this lab, the Artemis board and connected sensors are achieved to be powered from a battery. The datasheet of the IMU we are using provides lots of useful information which helps to measure and process roll and pitch data.
                         </p>
                         
-                        <p>The two ToF sensors are soldered and connected to the Artemis firstly and tested using example codes from libraries. Based on the example functions provided, the I2C communication protocol and working functions of ToF sesors are studied. 
-                        </p>    
+                        <p>During this lab, the IMU is firstly set up to test its functions using example codes. THen, the roll and pitch angles are computed using formulas based on IMU raw data readings. Similar to previous labs, the collected data are transmitted to the computer side using BLE. Eventually, the battery is soldered to a JST connector hence to power Artemis and sensors. </p> 
                         
-                        <p>To further investigate the performance of the sensor, some experiments regarding distance range, surface color of obstacle and texture of obstacle are conducted. 
-                        </p>
-                        
-                        <p>Eventually, programs are developed on both Artemis and computer side to get time-stamped data recorded from ToF sensors to be transmitted and display on the computer via Bluetooth.</p>
-                        
-                        
-                        <p></p>
-                        <h1> Prelab </h1>
-                        <h2 class="section-heading">- I2C address & connection of two ToF sensors</h2>
-                        <p> According to the <a href="https://cdn.sparkfun.com/assets/8/9/9/a/6/VL53L0X_DS.pdf" class="link-primary">datasheet</a> of ToF sensor, its default I2C address is 0x52. However, after connecting one ToF sensor with Artemis through the QWIIC breakout board, and print the device address using example code, the address of QWIIC is 0x69 and the address of ToF sensor is 0x29.
-                        </p>
-                        
-                        <p> After soldering the cables to the sensors, each of the two ToF sensors is connected with Artemis individually and tests its distance measurement performance using example codes. While since both sensors share the same default I2C address, when connected and work simultaneously, only one of them can communicate with its master device (Artemis) via the default address.
-                        </p>
-                        
-                        <p>Therefore, to use 2 ToF sensors simultaneously, one of the sensor's I2C address must be modified, so that master board can communicate with two ToF sensors via different addresses. To modify the address, the XSHUT pin of both sensors are connected to pin A0 and A1 on Artemis respectively. Then, the second sensor can be manually disabled by writting a digital <code>LOW</code> to its XSHUT, while the first sensor receives a digital <code>HIGH</code> on its XSHUT pin to remain enabled, so that the address of the first sensor can be mannualy modified using <code>setI2CAddress()</code> function. Finally, we can bring back the first sensor by changing the digital signal to its XSHUT pin to <code>HIGH</code>.
-                        </p>
-                        
-                        <img src="lab3_imgs/modify.png" style="width:100%">
-                        
-                        
-                        
-                        <h2 class="section-heading">- sensor wiring and placement</h2>
-                        <p> Since I only have two ToF sensors, I would like to place one on the front of the robot while the other one on the left side. This means the obstacles from backward and right side can be missed. The wiring diagram is sketched as below.
-                        </p>
-                        
-                        <img src="lab3_imgs/new_sketch.jpg" style="width:100%">
                         
                         <p></p>
                         <h1> Lab Tasks </h1> 
 
-                        <h2 class="section-heading">Task 1: Sensor soldering & connection</h2>
-                        <p> The single sensor connection with Artemis is shown as picture below, following with a screenshot of Artemis scanning for I2C device address. It is shown that two adresses are detected, 0x69 for QWIIC board and 0x29 is for ToF sensor.
+                        <h2 class="section-heading">Task 1: Set up the IMU</h2>
+                        <p> The IMU is connected to Artemis and tested using example code. The output is shown in the image below.
                         </p>
                         
-                        <div class="row">
-                              <div class="column">
-                                <img src="lab3_imgs/hardware.jpg" style="width:80%">
-                              </div>
-                              <p></p>
-                              <div class="column">
-                                <img src="lab3_imgs/address.png" style="width:100%">
-                              </div>
-                        </div> 
-                        
-                        <p> It needs to be noticed that the default address for ToF sensor is 0x52 which is 1010010 in binary, while it becomes 0x29 which is 101001 as printed. It seems Artemis shifts the LSB of the default address and allocate it as 0x29 for ToF sensor.
-                        </p>
-                        
-                        
-                        <h2 class="section-heading">Task 2: Sensor measurement test</h2>
-                        <p> According to the <a href="https://cdn.sparkfun.com/assets/e/1/8/4/e/VL53L1X_API.pdf" class="link-primary">manual</a> of ToF sensor, there are three distance modes, while only two of them: Short / Long distance mode are applicable in Arduino ide becase of the library implemented. Since the short distance mode has better ambient immunity and its maximum working distance is up to 1.3 meters which is quite enough to detect obstacles around the robot, it is chosen to be the work mode in future labs.
-                        </p>
-                        
-                         <table class="table">
-                                <thead>
-                                  <tr>
-                                    <th scope="col">Possible distance modes</th>
-                                    <th scope="col">Maximum distance</th>
-                                    <th scope="col">Benefit/comments</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <th scope="row">Short (default)</th>
-                                    <td>Up to 1.3 m</td>
-                                    <td>Better ambient immunity</td>
-                                  </tr>
-                                  <tr>
-                                    <th scope="row">Long</th>
-                                    <td>Up to 4 m</td>
-                                    <td>Maximum distance</td>
-                                  </tr>
-                                </tbody>
-                          </table>
-                        
-                        <p> The picture below shows the distance measurement tool to measure the actual distance as reference to compare the performance of the ToF sensor. A simple program is developed to record readings from a ToF sensor for 100 times and compute the average measurement as the final distance, as the video demonstrates.
-                        </p>
-                        
-                        <img src="lab3_imgs/measure_tool.png" width=315px height=560px>
-                        <p></p>
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
-                        <p> The figures for both actual distance and measured distance are recorded as distance varies. A visualization of the measurement performance goes as the actual distance increases is shown below.
-                        </p>
-                        
+                        picture: example output
                         <img src="lab3_imgs/distance.png" style="width:100%">
                         
-                        <p> I measured and recorded 12 different distances for this plot. As the figure shows, the measured distance basically overlaps with the reference line for shorter distances. While as actual distance becomes longer up to 1250 mm, the performance starts to be disappointing, and becomes even worse after actual distance reaches over 1500 mm. This result basically matches the statement from datasheet that the working range for short distance mode is up to 1.3m.
-                        </p>
                         
-                        <p> Generally, the short distance mode gives a satisfying performance within distance below 1250 mm which is quite acceptable for this lab.
-                        </p>
+                        <p> Data discussion </p>
+                        
+                        <p> It is noticed that in the example code, the <code>AD0_VAL</code> PIN is defined to be 1 by default. The comment in the example code says the value can be changed to 0 when the ADR jumper is closed. </p>
+                        
+                        <p>According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of the IMU board, the slave address of the ICM-20948 is <code>b110100X</code> which is 7 bits long. The LSB bit of the 7-bit address is determined by the logic level on pin AD0. This allows two ICM-20948s to be connected to the same I2C bus simultaneously. When used in this configuration, the address of the one of the devices should be b1101000 (pin AD0 is logic low) and the address of the other should be b1101001 (pin AD0 is logic high). </p>
+                        
+                        
+                        <h2 class="section-heading">Task 2: Accelerometer test</h2>
+                        <p> Based on the raw data output from accelerometer, the roll and pitch angles are calculated using the equations shown below.</p>
+                        
+                        picture: equation
+                        <img src="lab3_imgs/distance.png" style="width:100%">
+                   
+                        <p> The output at {-90, 0, 90} degrees for both roll and pitch angles are plotted using Serial Plotter in Arduino ide as shown below.</p>
+                        
+                        pictures: acc_roll & pitch
+                        <img src="lab3_imgs/measure_tool.png" width=315px height=560px>
+                        
+                        <p> The error of accelerometer measurements at these three degrees are shown in table below, where we can see the errors are basically around 1 degree which are pretty much acceptable. </p>
+                        
+                        pictures: acc table
+                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        
+                        <p> To further investigate how the noise caused by nearby running RC car can affect the data collected by accelerometer, 3 seconds of "noisy" data for both roll and pitch are recorded hence to compute <a href="https://www.alphabold.com/fourier-transform-in-python-vibration-analysis/" class="link-primary">Fourier Transform in Python</a> to analyse frequency spectrum. </p>
+                        
+                        <p> The frequency spectrum of "noisy" roll data is shown as below. </p>
+                        
+                        picture: roll_freq
+                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        
+                        <p> Following plot shows the frequency spectrum of "noisy" pitch data. </p>
+                        
+                        picture: pitch_freq
+                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        
+                        <p> The data I used are collected within 3 seconds, the number of data points collected is 94 and hence the sampling frequency can be computed as around 31 Hz. The sampling frequency is actually limited by the delay time set in the example code. </p>
+                        
+                        <p> According to those two plots above, despite a spike on 0 Hz, there is only one significant spike in roll frequency spectrum at about 7 Hz, and no obvious spike in pitch frequency spectrum. According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of IMU, this is probably because there is a low pass filter which works from 5.7 Hz to 246 Hz for accelerometer. Therefore, no need to worry about the ambient noise to affect the accuracy of data collected by accelerometer.</p>
                         
                         
                         
-                        <h2 class="section-heading">Task 3: Connecting 2 ToF sensors</h2>
-                        <p> To connect two ToF sensors and get them work simultaneously, apart from modifying I2C address for one of them, the example code <code>ReadDistance</code> is further extended to support measuring and printing out distances from both ToF sensors. The outputs from two ToF sensors working simultaneously are shown below.
-                        </p>
                         
-                        <img src="lab3_imgs/8.png" style="width:100%">
+                        <h2 class="section-heading">Task 3: Gyroscope test</h2>
+                        <p> Based on the raw data readings from gyroscope, the roll and pitch angles are calculated using the formulas given from <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-4-IMU.pdf" class="link-primary">lecture</a>. </p>
                         
-                        <p> As below the code snippet of getting readings from both ToF sensors shows, a <code>while</code> loop is applied to ensure only if both sensors get ready to send data, the distances are recorded, otherwise the loop will delay the system.
-                        </p>
                         
+                        <p> The output at {-90, 0, 90} degrees for both roll and pitch angles are plotted using Serial Plotter in Arduino ide as shown below. </p>
+                        
+                        pictures: gyro_roll & pitch
                         <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
                         
+                        <p>The error of gyroscope measurements at these three degrees are shown in table below. It needs to be noticed that because of the gyroscope drift caused by accumulation error over time resulted from the formulas we use to calcuate angles, the error can become quite large as time goes. Hence the measurements here are conducted just as gyroscope initializes. </p>
                         
-                        <h2 class="section-heading">Task 4: ToF sensor speed</h2>
-                        <p> According to the datasheet(link), sampling frequency of ToF sensor can be up to 50 Hz (20ms interval). Based on SparkFun_VL53L1X_Arduino_Library, the function <code>getIntermeasurementPeriod()</code> can return measurement interval in millisecond. Hence the default sensor speed is shown as below.
+                        pictures: gyro table
+                         <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        
+                        <p> To try to investigate the influence from sampling frequency on the accuracy of calculated angles, the frequency is changed from 10 Hz to 100 Hz by adjusting delay time in from 100 ms to 10 ms in the code.</p>
+                        
+                        <p> When the sampling frequency is 10 Hz, the pitch and roll values are as follows when I keep the IMU flat on the table:</p>
+                        
+                        picture: 10 Hz
+                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        
+                        <p>After the sampling frequency is changed to 100 Hz, still keep the IMU flat on the table, though it is still not accurate enough, the drift decreases obviously within same period of time. </p>
+                        
+                        picture: 100 Hz
+                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        
+                        <p>To counteract the negative effects of gyroscope drift on the accuracy of measurements, a complementary filter is implemented as the equation below. </p>
+                        
+                        picture: comple filter equation
+                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        
+                        <p> where <code>alpha</code> is a weight coefficient. If <code>alpha</code> is 1, <code>theta</code> would be exactly same as accelerometer results. If <code>alpha</code> is 0, <code>theta</code> would be not changed as gyroscope results. Otherwise, <code>theta</code> is a combination of both gyroscope and accelerometer results. </p>
+                        
+                        <p>Since this filter is complementing measurement results of gyroscope, the gyroscope results should dominate, hence theoretically, <code>alpha</code> should be less than 0.5. Also, gyroscope readings are more robust against sudden moves than the readings of accelerometer. After conducting some tests, when <code>alpha</code> = 0.1, with a samll portion of accelerometer data, the drift can be counteracted effectively.  </p>
+                        
+                        
+                        
+                        <h2 class="section-heading">Task 4: Sample data</h2>
+                        <p> This task aims to transmit roll and pitch data collected by accelerometer and gyroscope to computer side using BLE. Since BLE is designed to consume minimal power, and one way it does this is by introducing latency into the connection, the latency can cause delays in message transmission, especially if the message is large or complex. </p>
+                        
+                        modify:
+                        <p> To minimize delays during transmission, all the manually set delays and <code>Serial.print</code> commands are erased. According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of IMU, the sampling frequency can be up to 1.125 kHz, but because of the BLE transmission limitation, by counting received data on computer side within a specific period of time, the actual sampling frequency can be computed as only ---Hz.
                         </p>
                         
-                        <div class="row">
-                              <div class="column">
-                                <img src="lab3_imgs/sampling.png" style="width:100%">
-                              </div>
-                              <div class="column">
-                                <img src="lab3_imgs/default.png" style="width:100%">
-                              </div>
-                        </div> 
+                        <p> The IMU data are combined with ToF distance sensor data together with time-stamp to be stored in an array on the Artemis side, and then send to computer side via BLE. Video below shows the data from sensors are stored in an array in Artemis. Every time the readings update, they are stored and send immediately and the array is emptied to store new readings, hence to prevent running out of memory limitation by BLE transmission. </p>
                         
-                        <p> As mentioned before, since the presence of <code>while</code> loop that waits until both sensor get ready to send data can slow down the frequency of printing out the measured distances, the interval between two printed readings may not represent the real sampling frequency of the sensor effectively.
-                        </p>
-                         
+                        <p></p>
+                        store in arrays
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
-                        <h2 class="section-heading">Task 5: Data transmission via BLE</h2>
-                        <p> The final task is to transmit the sensors' collected data from Artemis to computer side via Bluetooth. 
-                        </p>
+                        <p> Eventually, five seconds of ToF and IMU data are sent to computer side via BLE as shown in video below. </p>
                         
-                        <p> <b>On the Artemis side</b>, a new class <code>ToF_Sensor.h</code> is defined which has two functions: <code>init()</code> to initialize both sensors and change one of its I2C address; <code>measure_dist</code> to conduct distance measurement and store results to a <code>EString: tx_estring_value2</code>. The main body of this class is basically copy of Task 3 codes.
-                        </p>
+                        <p></p>
+                        Video: 5s send data
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
-                        <p> Similar to lab 2, a new command case <code>tof_data</code> is created to call the function <code>sensors.measure_dist()</code> to conduct the distance measurement, send the string <code>sensors.tx_estring_value2</code> storing measurement to computer side, and print out the measurement on the Serial Monitor.
+                        
+                        
+                        
+                        
+                        <h2 class="section-heading">Task 5: Cut the Coord </h2>
+                        <p> In this task, the cables of 3.7 V, 650 mAh battery are soldered with JST connector so that it can be used as power source of Artemis board and sensors connected to the board. While the 3.7 V, 850 mAh battery is used to power up the motors of robot since the motors comsume more energy than the board and sensors.
                         </p>
                         
-                        	<img src="lab3_imgs/case.png" style="width:100%">
+                        <p> Eventually, the battery is connecte to the Artemis with sensors, and they are mounted on the robot with tape as shown in the figure below. </p>
                         
-                        <p> <b>On the computer side</b>, a callback function is defined to receive the string containing time-stamped readings from both sensors. 
-                        </p>
-                        
-                        <img src="lab3_imgs/callback.png" style="width:100%">
-                        
-                        <p> In order to print the time v.s. distance graph, the timestamp, sensor1 reading and sensor2 reading need to be extracted from the <code>ToF_data</code> string respectively. A function is defined loop  for 10 seconds and extract time, measured distance from first and second sensors to store them to three lists.
-                        </p>
-                        
-                        <img src="lab3_imgs/extract.png" style="width:50% height:50%">
-                        
-                        <p> Eventually, according to the data from three lists, the time v.s. distance plot can be sketched as below.
-                        </p>
-                        
+                        picture: car
                         <img src="lab3_imgs/9.png" style="width:100%">
                         
                         
