@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
+        <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
+        <title>Fast Robots: Lab 3</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">ECE 5160 · Fast Robots</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me & Project</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Lab3:</h1>
+                            <h1>Time of Flight Sensors</h1>
+                            <h2 class="subheading">Equip the robot with sensors.</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="about.html">Zhongqi Tao</a>
+                                on February 14, 2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        
+                        <p>The purpose of this lab is to equip the robot with sensors, at this moment, we are implementing two ToF (Time of Flight) distance sensors to measure the distance between obstacles and the robot.
+                        </p>
+                        
+                        <p>The two ToF sensors are soldered and connected to the Artemis firstly and tested using example codes from libraries. Based on the example functions provided, the I2C communication protocol and working functions of ToF sesors are studied. 
+                        </p>    
+                        
+                        <p>To further investigate the performance of the sensor, some experiments regarding distance range, surface color of obstacle and texture of obstacle are conducted. 
+                        </p>
+                        
+                        <p>Eventually, programs are developed on both Artemis and computer side to get time-stamped data recorded from ToF sensors to be transmitted and display on the computer via Bluetooth.</p>
+                        
+                        
+                        <p></p>
+                        <h1> Prelab </h1>
+                        <h2 class="section-heading">- I2C address & connection of two ToF sensors</h2>
+                        <p> According to the <a href="https://cdn.sparkfun.com/assets/8/9/9/a/6/VL53L0X_DS.pdf" class="link-primary">datasheet</a> of ToF sensor, its default I2C address is 0x52. However, after connecting one ToF sensor with Artemis through the QWIIC breakout board, and print the device address using example code, the address of QWIIC is 0x69 and the address of ToF sensor is 0x29.
+                        </p>
+                        
+                        <p> After soldering the cables to the sensors, each of the two ToF sensors is connected with Artemis individually and tests its distance measurement performance using example codes. While since both sensors share the same default I2C address, when connected and work simultaneously, only one of them can communicate with its master device (Artemis) via the default address.
+                        </p>
+                        
+                        <p>Therefore, to use 2 ToF sensors simultaneously, one of the sensor's I2C address must be modified, so that master board can communicate with two ToF sensors via different addresses. To modify the address, the XSHUT pin of both sensors are connected to pin A0 and A1 on Artemis respectively. Then, the second sensor can be manually disabled by writting a digital <code>LOW</code> to its XSHUT, while the first sensor receives a digital <code>HIGH</code> on its XSHUT pin to remain enabled, so that the address of the first sensor can be mannualy modified using <code>setI2CAddress()</code> function. Finally, we can bring back the first sensor by changing the digital signal to its XSHUT pin to <code>HIGH</code>.
+                        </p>
+                        
+                        <img src="lab3_imgs/modify.png" style="width:100%">
+                        
+                        
+                        
+                        <h2 class="section-heading">- sensor wiring and placement</h2>
+                        <p> Since I only have two ToF sensors, I would like to place one on the front of the robot while the other one on the left side. This means the obstacles from backward and right side can be missed. The wiring diagram is sketched as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/new_sketch.jpg" style="width:100%">
+                        
+                        <p></p>
+                        <h1> Lab Tasks </h1> 
+
+                        <h2 class="section-heading">Task 1: Sensor soldering & connection</h2>
+                        <p> The single sensor connection with Artemis is shown as picture below, following with a screenshot of Artemis scanning for I2C device address. It is shown that two adresses are detected, 0x69 for QWIIC board and 0x29 is for ToF sensor.
+                        </p>
+                        
+                        <div class="row">
+                              <div class="column">
+                                <img src="lab3_imgs/hardware.jpg" style="width:80%">
+                              </div>
+                              <p></p>
+                              <div class="column">
+                                <img src="lab3_imgs/address.png" style="width:100%">
+                              </div>
+                        </div> 
+                        
+                        <p> It needs to be noticed that the default address for ToF sensor is 0x52 which is 1010010 in binary, while it becomes 0x29 which is 101001 as printed. It seems Artemis shifts the LSB of the default address and allocate it as 0x29 for ToF sensor.
+                        </p>
+                        
+                        
+                        <h2 class="section-heading">Task 2: Sensor measurement test</h2>
+                        <p> According to the <a href="https://cdn.sparkfun.com/assets/e/1/8/4/e/VL53L1X_API.pdf" class="link-primary">manual</a> of ToF sensor, there are three distance modes, while only two of them: Short / Long distance mode are applicable in Arduino ide becase of the library implemented. Since the short distance mode has better ambient immunity and its maximum working distance is up to 1.3 meters which is quite enough to detect obstacles around the robot, it is chosen to be the work mode in future labs.
+                        </p>
+                        
+                         <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">Possible distance modes</th>
+                                    <th scope="col">Maximum distance</th>
+                                    <th scope="col">Benefit/comments</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <th scope="row">Short (default)</th>
+                                    <td>Up to 1.3 m</td>
+                                    <td>Better ambient immunity</td>
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">Long</th>
+                                    <td>Up to 4 m</td>
+                                    <td>Maximum distance</td>
+                                  </tr>
+                                </tbody>
+                          </table>
+                        
+                        <p> The picture below shows the distance measurement tool to measure the actual distance as reference to compare the performance of the ToF sensor. A simple program is developed to record readings from a ToF sensor for 100 times and compute the average measurement as the final distance, as the video demonstrates.
+                        </p>
+                        
+                        <img src="lab3_imgs/measure_tool.png" width=315px height=560px>
+                        <p></p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> The figures for both actual distance and measured distance are recorded as distance varies. A visualization of the measurement performance goes as the actual distance increases is shown below.
+                        </p>
+                        
+                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        
+                        <p> I measured and recorded 12 different distances for this plot. As the figure shows, the measured distance basically overlaps with the reference line for shorter distances. While as actual distance becomes longer up to 1250 mm, the performance starts to be disappointing, and becomes even worse after actual distance reaches over 1500 mm. This result basically matches the statement from datasheet that the working range for short distance mode is up to 1.3m.
+                        </p>
+                        
+                        <p> Generally, the short distance mode gives a satisfying performance within distance below 1250 mm which is quite acceptable for this lab.
+                        </p>
+                        
+                        
+                        
+                        <h2 class="section-heading">Task 3: Connecting 2 ToF sensors</h2>
+                        <p> To connect two ToF sensors and get them work simultaneously, apart from modifying I2C address for one of them, the example code <code>ReadDistance</code> is further extended to support measuring and printing out distances from both ToF sensors. The outputs from two ToF sensors working simultaneously are shown below.
+                        </p>
+                        
+                        <img src="lab3_imgs/8.png" style="width:100%">
+                        
+                        <p> As below the code snippet of getting readings from both ToF sensors shows, a <code>while</code> loop is applied to ensure only if both sensors get ready to send data, the distances are recorded, otherwise the loop will delay the system.
+                        </p>
+                        
+                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        
+                        
+                        <h2 class="section-heading">Task 4: ToF sensor speed</h2>
+                        <p> According to the datasheet(link), sampling frequency of ToF sensor can be up to 50 Hz (20ms interval). Based on SparkFun_VL53L1X_Arduino_Library, the function <code>getIntermeasurementPeriod()</code> can return measurement interval in millisecond. Hence the default sensor speed is shown as below.
+                        </p>
+                        
+                        <div class="row">
+                              <div class="column">
+                                <img src="lab3_imgs/sampling.png" style="width:100%">
+                              </div>
+                              <div class="column">
+                                <img src="lab3_imgs/default.png" style="width:100%">
+                              </div>
+                        </div> 
+                        
+                        <p> As mentioned before, since the presence of <code>while</code> loop that waits until both sensor get ready to send data can slow down the frequency of printing out the measured distances, the interval between two printed readings may not represent the real sampling frequency of the sensor effectively.
+                        </p>
+                         
+                        
+                        <h2 class="section-heading">Task 5: Data transmission via BLE</h2>
+                        <p> The final task is to transmit the sensors' collected data from Artemis to computer side via Bluetooth. 
+                        </p>
+                        
+                        <p> <b>On the Artemis side</b>, a new class <code>ToF_Sensor.h</code> is defined which has two functions: <code>init()</code> to initialize both sensors and change one of its I2C address; <code>measure_dist</code> to conduct distance measurement and store results to a <code>EString: tx_estring_value2</code>. The main body of this class is basically copy of Task 3 codes.
+                        </p>
+                        
+                        <p> Similar to lab 2, a new command case <code>tof_data</code> is created to call the function <code>sensors.measure_dist()</code> to conduct the distance measurement, send the string <code>sensors.tx_estring_value2</code> storing measurement to computer side, and print out the measurement on the Serial Monitor.
+                        </p>
+                        
+                        	<img src="lab3_imgs/case.png" style="width:100%">
+                        
+                        <p> <b>On the computer side</b>, a callback function is defined to receive the string containing time-stamped readings from both sensors. 
+                        </p>
+                        
+                        <img src="lab3_imgs/callback.png" style="width:100%">
+                        
+                        <p> In order to print the time v.s. distance graph, the timestamp, sensor1 reading and sensor2 reading need to be extracted from the <code>ToF_data</code> string respectively. A function is defined loop  for 10 seconds and extract time, measured distance from first and second sensors to store them to three lists.
+                        </p>
+                        
+                        <img src="lab3_imgs/extract.png" style="width:50% height:50%">
+                        
+                        <p> Eventually, according to the data from three lists, the time v.s. distance plot can be sketched as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/9.png" style="width:100%">
+                        
+                        
+                        
+                        <p></p>
+                        <h1> Additional Tasks </h1>
+                        
+                        <h2 class="section-heading">- Infrared transmission based sensor</h2>
+                        <p> Distance sensors such as IR distance sensors and ToF sensors are infrared transmission based sensors.
+                        </p>
+                        
+                        <p> Generally, an IR sensor includes a infrared LED to emit beam to the environment, the distance measurement is then based on receiving reflected beam from obstacles to compute the distance. Despite its attractive price and relatively good performance, it is difficult to use an IR sensor to measure a long distance, since the longer the distance, the smaller the angle and hence more difficult to detect the angle and compute distance.
+                            It is also sensitive to surface colors, textures and ambient light condition.
+                        </p>
+                        
+                        <p> ToF sensor emits a PWM (pulse width modulated) signal to the environment and records the time until the reflecting signal is received, hence to calculate the distance. Since its using wave as media, the speed is close to light speed and it is almost insensitive to surface colors, textures or ambient light.
+                        </p>
+                        
+
+                        
+                        <h2 class="section-heading">- Sensitivity of sensors to colors & textures </h2>
+                        <p> To test the sensor's sensitivity to colors, the obstacles with black, white and orange surface colors are chosen, with a fixed distance of 100 mm.
+                        </p>
+                        
+                        <p> The result for surface with black color is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/black.png" style="width:100%">
+                        
+                        <p> The result for surface with white color is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/white.png" style="width:100%">
+                        
+                        <p> The result for surface with orange color is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/orange.png" style="width:100%">
+                        
+                        <p> Based on these experiment results, the ToF sensor is not sensitive to different colors.
+                        </p>
+                        
+                        
+                        <p> To test the sensor's sensitivity to textures, the obstacles made by wool, plastic and board are chosen, with a fixed distance of 100 mm.
+                        </p>
+                        
+                        <p> The result for obstacle made by wool is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/wool.png" style="width:100%">
+                        
+                        <p> The result for obstacle made by plastic is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/plastic.png" style="width:100%">
+                        
+                        <p> The result for obstacle made by board is shown as below.
+                        </p>
+                        
+                        <img src="lab3_imgs/board.png" style="width:100%">
+                        
+                        <p> According to the experiment results, the ToF sensor is not sensitive to different textures as well.
+                        </p>
+                        
+                        
+                        <p>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/zt88/Fast-Robots">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Fast Robots 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
