@@ -71,11 +71,11 @@
                         <p> The IMU is connected to Artemis and tested using example code. The output is shown in the image below.
                         </p>
                         
-                        picture: example output
-                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        <img src="lab4_imgs/IMU.jpg" style="width:100%">
+                        <p></p>
+                        <p></p>
+                        <img src="lab4_imgs/example_output.png" style="width:100%">
                         
-                        
-                        <p> Data discussion </p>
                         
                         <p> It is noticed that in the example code, the <code>AD0_VAL</code> PIN is defined to be 1 by default. The comment in the example code says the value can be changed to 0 when the ADR jumper is closed. </p>
                         
@@ -85,30 +85,30 @@
                         <h2 class="section-heading">Task 2: Accelerometer test</h2>
                         <p> Based on the raw data output from accelerometer, the roll and pitch angles are calculated using the equations shown below.</p>
                         
-                        picture: equation
-                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        
+                        <img src="lab4_imgs/acc_equation.png" style="width:100%">
                    
                         <p> The output at {-90, 0, 90} degrees for both roll and pitch angles are plotted using Serial Plotter in Arduino ide as shown below.</p>
                         
-                        pictures: acc_roll & pitch
-                        <img src="lab3_imgs/measure_tool.png" width=315px height=560px>
+                        <p> Accelerometer roll output: </p>
+                        <img src="lab4_imgs/acc_roll.png" style="width:100%">
+                        
+                        <p> Accelerometer pitch output: </p>
+                        <img src="lab4_imgs/acc_pitch.png" style="width:100%">
                         
                         <p> The error of accelerometer measurements at these three degrees are shown in table below, where we can see the errors are basically around 1 degree which are pretty much acceptable. </p>
                         
-                        pictures: acc table
-                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        <img src="lab4_imgs/acc_table.png" style="width:100%">
                         
                         <p> To further investigate how the noise caused by nearby running RC car can affect the data collected by accelerometer, 3 seconds of "noisy" data for both roll and pitch are recorded hence to compute <a href="https://www.alphabold.com/fourier-transform-in-python-vibration-analysis/" class="link-primary">Fourier Transform in Python</a> to analyse frequency spectrum. </p>
                         
                         <p> The frequency spectrum of "noisy" roll data is shown as below. </p>
                         
-                        picture: roll_freq
-                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        <img src="lab4_imgs/roll_freq.png" style="width:100%">
                         
                         <p> Following plot shows the frequency spectrum of "noisy" pitch data. </p>
                         
-                        picture: pitch_freq
-                        <img src="lab3_imgs/distance.png" style="width:100%">
+                        <img src="lab4_imgs/pitch_freq.png" style="width:100%">
                         
                         <p> The data I used are collected within 3 seconds, the number of data points collected is 94 and hence the sampling frequency can be computed as around 31 Hz. The sampling frequency is actually limited by the delay time set in the example code. </p>
                         
@@ -123,30 +123,30 @@
                         
                         <p> The output at {-90, 0, 90} degrees for both roll and pitch angles are plotted using Serial Plotter in Arduino ide as shown below. </p>
                         
-                        pictures: gyro_roll & pitch
-                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        <p> Gyroscope roll output: </p>
+                        <img src="lab4_imgs/gyro_roll.png" style="width:100%">
+                        
+                        <p> Gyroscope pitch output: </p>
+                        <img src="lab4_imgs/gyro_pitch.png" style="width:100%">
                         
                         <p>The error of gyroscope measurements at these three degrees are shown in table below. It needs to be noticed that because of the gyroscope drift caused by accumulation error over time resulted from the formulas we use to calcuate angles, the error can become quite large as time goes. Hence the measurements here are conducted just as gyroscope initializes. </p>
                         
-                        pictures: gyro table
-                         <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                         <img src="lab4_imgs/gyro_table.png" style="width:100%">
                         
                         <p> To try to investigate the influence from sampling frequency on the accuracy of calculated angles, the frequency is changed from 10 Hz to 100 Hz by adjusting delay time in from 100 ms to 10 ms in the code.</p>
                         
                         <p> When the sampling frequency is 10 Hz, the pitch and roll values are as follows when I keep the IMU flat on the table:</p>
                         
-                        picture: 10 Hz
-                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        <img src="lab4_imgs/10_Hz_freq_gyro.png" style="width:100%">
                         
                         <p>After the sampling frequency is changed to 100 Hz, still keep the IMU flat on the table, though it is still not accurate enough, the drift decreases obviously within same period of time. </p>
                         
-                        picture: 100 Hz
-                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        
+                        <img src="lab4_imgs/100_Hz_freq_gyro.png" style="width:100%">
                         
                         <p>To counteract the negative effects of gyroscope drift on the accuracy of measurements, a complementary filter is implemented as the equation below. </p>
                         
-                        picture: comple filter equation
-                        <img src="lab3_imgs/bothreadingcode.png" style="width:100%">
+                        <img src="lab4_imgs/filter_equation.png" style="width:100%">
                         
                         <p> where <code>alpha</code> is a weight coefficient. If <code>alpha</code> is 1, <code>theta</code> would be exactly same as accelerometer results. If <code>alpha</code> is 0, <code>theta</code> would be not changed as gyroscope results. Otherwise, <code>theta</code> is a combination of both gyroscope and accelerometer results. </p>
                         
@@ -157,22 +157,20 @@
                         <h2 class="section-heading">Task 4: Sample data</h2>
                         <p> This task aims to transmit roll and pitch data collected by accelerometer and gyroscope to computer side using BLE. Since BLE is designed to consume minimal power, and one way it does this is by introducing latency into the connection, the latency can cause delays in message transmission, especially if the message is large or complex. </p>
                         
-                        modify:
-                        <p> To minimize delays during transmission, all the manually set delays and <code>Serial.print</code> commands are erased. According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of IMU, the sampling frequency can be up to 1.125 kHz, but because of the BLE transmission limitation, by counting received data on computer side within a specific period of time, the actual sampling frequency can be computed as only ---Hz.
+                        <p> To minimize delays during transmission, all the manually set delays and <code>Serial.print</code> commands are erased. According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of IMU, the sampling frequency can be up to 1.125 kHz, but because of the BLE transmission limitation, by counting received data on computer side within a specific period of time, the actual sampling frequency can be computed as around 260 Hz.
                         </p>
                         
                         <p> The IMU data are combined with ToF distance sensor data together with time-stamp to be stored in an array on the Artemis side, and then send to computer side via BLE. Video below shows the data from sensors are stored in an array in Artemis. Every time the readings update, they are stored and send immediately and the array is emptied to store new readings, hence to prevent running out of memory limitation by BLE transmission. </p>
                         
                         <p></p>
-                        store in arrays
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/FMj6If_itQI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         <p> Eventually, five seconds of ToF and IMU data are sent to computer side via BLE as shown in video below. </p>
                         
                         <p></p>
-                        Video: 5s send data
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
+
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/dT4xr1YZdR0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         
                         
@@ -183,8 +181,7 @@
                         
                         <p> Eventually, the battery is connecte to the Artemis with sensors, and they are mounted on the robot with tape as shown in the figure below. </p>
                         
-                        picture: car
-                        <img src="lab3_imgs/9.png" style="width:100%">
+                        <img src="lab4_imgs/sensors_mounted.png" style="width:100%">
                         
                         
                         
@@ -195,18 +192,15 @@
                         
                         <p>The process of building bluetooth connection, playing with the robot, collect and send 20 seconds data to the computer side, and plot the data versus time is shown in video below.</p>
                         
-                        Video: 5s send data
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/uF3GpKz_OEQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         <p>The distance data versus time is plotted as below. </p>
                         
-                        distance
-                        <img src="lab3_imgs/9.png" style="width:100%">
+                        <img src="lab4_imgs/distance_data.png" style="width:100%">
                         
                         <p> The roll and pitch data collected by IMU are plotted as below.</p>
                         
-                        IMU
-                        <img src="lab3_imgs/9.png" style="width:100%">
+                        <img src="lab4_imgs/roll_pitch_data.png" style="width:100%">
                         
                         <p></p>
                         
