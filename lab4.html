@@ -188,65 +188,27 @@
                         
                         
                         
+                        <h2 class="section-heading">Task 6: Record a shunt </h2>
+                        <p> Finally, after the Artemis and sensors are mounted on the robot, I play with the car for a while to test its motors' performance firstly. It is found that when the battery is fully charged, both sides of motors run well as expected. However, when the battery power runs low, for my robot, left side motor speed becomes faster than the other side's. </p>
+                        
+                        <p> Then, the Artemis and sensors are powered by the battery, I started the bluetooth connection between Artemis and my computer. I played my robot for a while, made some movements such as go forward and backward, turn left and right, spin around. It needs to be clarified that since the <b>XSHUNT</b> pins of both ToF sensors are connected with Artemis using male and female wire, the wires and sensors may be damaged if I do a flip, therefore, I gave up flip movement.</p>
+                        
+                        <p>The process of building bluetooth connection, playing with the robot, collect and send 20 seconds data to the computer side, and plot the data versus time is shown in video below.</p>
+                        
+                        Video: 5s send data
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/_wrAU2IVCx0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p>The distance data versus time is plotted as below. </p>
+                        
+                        distance
+                        <img src="lab3_imgs/9.png" style="width:100%">
+                        
+                        <p> The roll and pitch data collected by IMU are plotted as below.</p>
+                        
+                        IMU
+                        <img src="lab3_imgs/9.png" style="width:100%">
+                        
                         <p></p>
-                        <h1> Additional Tasks </h1>
-                        
-                        <h2 class="section-heading">- Infrared transmission based sensor</h2>
-                        <p> Distance sensors such as IR distance sensors and ToF sensors are infrared transmission based sensors.
-                        </p>
-                        
-                        <p> Generally, an IR sensor includes a infrared LED to emit beam to the environment, the distance measurement is then based on receiving reflected beam from obstacles to compute the distance. Despite its attractive price and relatively good performance, it is difficult to use an IR sensor to measure a long distance, since the longer the distance, the smaller the angle and hence more difficult to detect the angle and compute distance.
-                            It is also sensitive to surface colors, textures and ambient light condition.
-                        </p>
-                        
-                        <p> ToF sensor emits a PWM (pulse width modulated) signal to the environment and records the time until the reflecting signal is received, hence to calculate the distance. Since its using wave as media, the speed is close to light speed and it is almost insensitive to surface colors, textures or ambient light.
-                        </p>
-                        
-
-                        
-                        <h2 class="section-heading">- Sensitivity of sensors to colors & textures </h2>
-                        <p> To test the sensor's sensitivity to colors, the obstacles with black, white and orange surface colors are chosen, with a fixed distance of 100 mm.
-                        </p>
-                        
-                        <p> The result for surface with black color is shown as below.
-                        </p>
-                        
-                        <img src="lab3_imgs/black.png" style="width:100%">
-                        
-                        <p> The result for surface with white color is shown as below.
-                        </p>
-                        
-                        <img src="lab3_imgs/white.png" style="width:100%">
-                        
-                        <p> The result for surface with orange color is shown as below.
-                        </p>
-                        
-                        <img src="lab3_imgs/orange.png" style="width:100%">
-                        
-                        <p> Based on these experiment results, the ToF sensor is not sensitive to different colors.
-                        </p>
-                        
-                        
-                        <p> To test the sensor's sensitivity to textures, the obstacles made by wool, plastic and board are chosen, with a fixed distance of 100 mm.
-                        </p>
-                        
-                        <p> The result for obstacle made by wool is shown as below.
-                        </p>
-                        
-                        <img src="lab3_imgs/wool.png" style="width:100%">
-                        
-                        <p> The result for obstacle made by plastic is shown as below.
-                        </p>
-                        
-                        <img src="lab3_imgs/plastic.png" style="width:100%">
-                        
-                        <p> The result for obstacle made by board is shown as below.
-                        </p>
-                        
-                        <img src="lab3_imgs/board.png" style="width:100%">
-                        
-                        <p> According to the experiment results, the ToF sensor is not sensitive to different textures as well.
-                        </p>
                         
                         
                         <p>
