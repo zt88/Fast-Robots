@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
+        <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
+        <title>Fast Robots: Lab 5</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">ECE 5160 · Fast Robots</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me & Project</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Lab5:</h1>
+                            <h1>Motors & Open Loop Control</h1>
+                            <h2 class="subheading">Change the robot from manual to open loop control.</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="about.html">Zhongqi Tao</a>
+                                on March 7, 2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        
+                        <p>The purpose of this lab is to add the IMU which is equipped with accelerometer and gyroscope to the robot to measure the real-time roll and pitch angles when the robot is running. Besides, at the end of this lab, the Artemis board and connected sensors are achieved to be powered from a battery. The datasheet of the IMU we are using provides lots of useful information which helps to measure and process roll and pitch data.
+                        </p>
+                        
+                        <p>During this lab, the IMU is firstly set up to test its functions using example codes. THen, the roll and pitch angles are computed using formulas based on IMU raw data readings. Similar to previous labs, the collected data are transmitted to the computer side using BLE. Eventually, the battery is soldered to a JST connector hence to power Artemis and sensors. </p> 
+                        
+                        
+                        <p></p>
+                        <h1> Lab Tasks </h1> 
+
+                        <h2 class="section-heading">Task 1: Set up the IMU</h2>
+                        <p> The IMU is connected to Artemis and tested using example code. The output is shown in the image below.
+                        </p>
+                        
+                        <img src="lab4_imgs/IMU.jpg" style="width:100%">
+                        <p></p>
+                        <p></p>
+                        <img src="lab4_imgs/example_output.png" style="width:100%">
+                        
+                        
+                        <p> It is noticed that in the example code, the <code>AD0_VAL</code> PIN is defined to be 1 by default. The comment in the example code says the value can be changed to 0 when the ADR jumper is closed. </p>
+                        
+                        <p>According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of the IMU board, the slave address of the ICM-20948 is <code>b110100X</code> which is 7 bits long. The LSB bit of the 7-bit address is determined by the logic level on pin AD0. This allows two ICM-20948s to be connected to the same I2C bus simultaneously. When used in this configuration, the address of the one of the devices should be b1101000 (pin AD0 is logic low) and the address of the other should be b1101001 (pin AD0 is logic high). </p>
+                        
+                        
+                        <h2 class="section-heading">Task 2: Accelerometer test</h2>
+                        <p> Based on the raw data output from accelerometer, the roll and pitch angles are calculated using the equations shown below.</p>
+                        
+                        
+                        <img src="lab4_imgs/acc_equation.png" style="width:100%">
+                   
+                        <p> The output at {-90, 0, 90} degrees for both roll and pitch angles are plotted using Serial Plotter in Arduino ide as shown below.</p>
+                        
+                        <p> Accelerometer roll output: </p>
+                        <img src="lab4_imgs/acc_roll.png" style="width:100%">
+                        
+                        <p> Accelerometer pitch output: </p>
+                        <img src="lab4_imgs/acc_pitch.png" style="width:100%">
+                        
+                        <p> The error of accelerometer measurements at these three degrees are shown in table below, where we can see the errors are basically around 1 degree which are pretty much acceptable. </p>
+                        
+                        <img src="lab4_imgs/acc_table.png" style="width:100%">
+                        
+                        <p> To further investigate how the noise caused by nearby running RC car can affect the data collected by accelerometer, 3 seconds of "noisy" data for both roll and pitch are recorded hence to compute <a href="https://www.alphabold.com/fourier-transform-in-python-vibration-analysis/" class="link-primary">Fourier Transform in Python</a> to analyse frequency spectrum. </p>
+                        
+                        <p> The frequency spectrum of "noisy" roll data is shown as below. </p>
+                        
+                        <img src="lab4_imgs/roll_freq.png" style="width:100%">
+                        
+                        <p> Following plot shows the frequency spectrum of "noisy" pitch data. </p>
+                        
+                        <img src="lab4_imgs/pitch_freq.png" style="width:100%">
+                        
+                        <p> The data I used are collected within 3 seconds, the number of data points collected is 94 and hence the sampling frequency can be computed as around 31 Hz. The sampling frequency is actually limited by the delay time set in the example code. </p>
+                        
+                        <p> According to those two plots above, despite a spike on 0 Hz, there is only one significant spike in roll frequency spectrum at about 7 Hz, and no obvious spike in pitch frequency spectrum. According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of IMU, this is probably because there is a low pass filter which works from 5.7 Hz to 246 Hz for accelerometer. Therefore, no need to worry about the ambient noise to affect the accuracy of data collected by accelerometer.</p>
+                        
+                        
+                        
+                        
+                        <h2 class="section-heading">Task 3: Gyroscope test</h2>
+                        <p> Based on the raw data readings from gyroscope, the roll and pitch angles are calculated using the formulas given from <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-4-IMU.pdf" class="link-primary">lecture</a>. </p>
+                        
+                        
+                        <p> The output at {-90, 0, 90} degrees for both roll and pitch angles are plotted using Serial Plotter in Arduino ide as shown below. </p>
+                        
+                        <p> Gyroscope roll output: </p>
+                        <img src="lab4_imgs/gyro_roll.png" style="width:100%">
+                        
+                        <p> Gyroscope pitch output: </p>
+                        <img src="lab4_imgs/gyro_pitch.png" style="width:100%">
+                        
+                        <p>The error of gyroscope measurements at these three degrees are shown in table below. It needs to be noticed that because of the gyroscope drift caused by accumulation error over time resulted from the formulas we use to calcuate angles, the error can become quite large as time goes. Hence the measurements here are conducted just as gyroscope initializes. </p>
+                        
+                         <img src="lab4_imgs/gyro_table.png" style="width:100%">
+                        
+                        <p> To try to investigate the influence from sampling frequency on the accuracy of calculated angles, the frequency is changed from 10 Hz to 100 Hz by adjusting delay time in from 100 ms to 10 ms in the code.</p>
+                        
+                        <p> When the sampling frequency is 10 Hz, the pitch and roll values are as follows when I keep the IMU flat on the table:</p>
+                        
+                        <img src="lab4_imgs/10_Hz_freq_gyro.png" style="width:100%">
+                        
+                        <p>After the sampling frequency is changed to 100 Hz, still keep the IMU flat on the table, though it is still not accurate enough, the drift decreases obviously within same period of time. </p>
+                        
+                        
+                        <img src="lab4_imgs/100_Hz_freq_gyro.png" style="width:100%">
+                        
+                        <p>To counteract the negative effects of gyroscope drift on the accuracy of measurements, a complementary filter is implemented as the equation below. </p>
+                        
+                        <img src="lab4_imgs/filter_equation.png" style="width:100%">
+                        
+                        <p> where <code>alpha</code> is a weight coefficient. If <code>alpha</code> is 1, <code>theta</code> would be exactly same as accelerometer results. If <code>alpha</code> is 0, <code>theta</code> would be not changed as gyroscope results. Otherwise, <code>theta</code> is a combination of both gyroscope and accelerometer results. </p>
+                        
+                        <p>Since this filter is complementing measurement results of gyroscope, the gyroscope results should dominate, hence theoretically, <code>alpha</code> should be less than 0.5. Also, gyroscope readings are more robust against sudden moves than the readings of accelerometer. After conducting some tests, when <code>alpha</code> = 0.1, with a samll portion of accelerometer data, the drift can be counteracted effectively.  </p>
+                        
+                        
+                        
+                        <h2 class="section-heading">Task 4: Sample data</h2>
+                        <p> This task aims to transmit roll and pitch data collected by accelerometer and gyroscope to computer side using BLE. Since BLE is designed to consume minimal power, and one way it does this is by introducing latency into the connection, the latency can cause delays in message transmission, especially if the message is large or complex. </p>
+                        
+                        <p> To minimize delays during transmission, all the manually set delays and <code>Serial.print</code> commands are erased. According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of IMU, the sampling frequency can be up to 1.125 kHz, but because of the BLE transmission limitation, by counting received data on computer side within a specific period of time, the actual sampling frequency can be computed as around only 50 Hz.
+                        </p>
+                        
+                        <p> The IMU data are combined with ToF distance sensor data together with time-stamp to be stored in an array on the Artemis side, and then send to computer side via BLE. Video below shows the data from sensors are stored in an array in Artemis. Every time the readings update, they are stored and send immediately and the array is emptied to store new readings, hence to prevent running out of memory limitation by BLE transmission. </p>
+                        
+                        <p></p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/FMj6If_itQI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> Eventually, five seconds of ToF and IMU data are sent to computer side via BLE as shown in video below. </p>
+                        
+                        <p></p>
+
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/dT4xr1YZdR0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        
+                        
+                        
+                        <h2 class="section-heading">Task 5: Cut the Coord </h2>
+                        <p> In this task, the cables of 3.7 V, 650 mAh battery are soldered with JST connector so that it can be used as power source of Artemis board and sensors connected to the board. While the 3.7 V, 850 mAh battery is used to power up the motors of robot since the motors comsume more energy than the board and sensors.
+                        </p>
+                        
+                        <p> Eventually, the battery is connected to the Artemis with sensors, and they are mounted on the robot with tape as shown in the figure below. </p>
+                        
+                        <img src="lab4_imgs/sensors_mounted.jpg" style="width:100%">
+                        
+                        
+                        
+                        <h2 class="section-heading">Task 6: Record a shunt </h2>
+                        <p> Finally, after the Artemis and sensors are mounted on the robot, I play with the car for a while to test its motors' performance firstly. It is found that when the battery is fully charged, both sides of motors run well as expected. However, when the battery power runs low, for my robot, left side motor speed becomes faster than the other side's. </p>
+                        
+                        <p> Then, the Artemis and sensors are powered by the battery, I started the bluetooth connection between Artemis and my computer. I played my robot for a while, made some movements such as go forward and backward, turn left and right, spin around. It needs to be clarified that since the <b>XSHUNT</b> pins of both ToF sensors are connected with Artemis using male and female wire, the wires and sensors may be damaged if I do a flip, therefore, I gave up flip movement.</p>
+                        
+                        <p>The process of building bluetooth connection, playing with the robot, collect and send 20 seconds data to the computer side, and plot the data versus time is shown in video below.</p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/uF3GpKz_OEQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p>The distance data versus time is plotted as below. </p>
+                        
+                        <img src="lab4_imgs/distance_data.png" style="width:100%">
+                        
+                        <p> The roll and pitch data collected by IMU are plotted as below.</p>
+                        
+                        <img src="lab4_imgs/roll_pitch-data.png" style="width:100%">
+                        
+                        <p></p>
+                        
+                        
+                        <p>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/zt88/Fast-Robots">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Fast Robots 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
