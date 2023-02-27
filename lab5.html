@@ -116,7 +116,7 @@
                         
                         <p> Similar to the first motor driver, the input pins of second motor driver is now connected with Artemis side and the output pins are connected with the wires from the other motor. Now two motor drivers control two motors using different PWM signals respectively, while they share the same power supply. The following codes are used to test both motor drivers.</p>
 
-                        <img src="lab4_imgs/double.png" style="width:100%">
+                        <img src="lab5_imgs/double.png" style="width:100%">
                         
                         <p> The spinning pattern is just the same as the way single motor does. The video below shows powered by batteries, both sides of wheels spin as the code defines.</p>
                         
@@ -131,7 +131,7 @@
                         
                         <h2 class="section-heading">Lower Limit PWM Values</h2>
                         <p> By conducting several times of experiments, I found that to make my robot start from the rest on the carpet, duty cyle needs to be at least 18%.</p>
-                        video:lower limit PWM
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/wSj64g5gTjY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         <p> While if the robot needs to make a turn, it needs even higher duty cycle up to ...%</p>
                         video:lower limit PWM turns
@@ -143,10 +143,10 @@
                         <h2 class="section-heading">Straight Line Running</h2>
                         <p> Since both motor drivers are connected in serial with robot battery, ideally their power should be the same, and hence the spinning speed for both motors are the same. While to further test if both motors are actually spinning at the same rate when their duty cycle of PWM input signal are the same, I set PWM duty cycle of both motor drivers to be 35 % to try to examine if the robot can run a straight line. As video shows, basically the robot can run in a straight line with acceptable deviation when distance becomes longer. </p>
                         
-                        video: straight line
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/cXp3fh8nUAE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         <p> While as I increase the duty cycle to try to run the robot with a higher speed, I found the devitation becomes more considerable as video below shows. It is probably because the motors need fidderent time to accelerate to the demanding speed, i.e. the acceleration of two motors are different.</p>
-                        video: higher speed straight line
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/lJok8xEEyNc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         
                         
