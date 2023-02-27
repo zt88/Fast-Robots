@@ -68,8 +68,7 @@
                         <p> The diagram below shows how I finally connect the whole systems includig Artemis, two motor drivers, motors and batteries.
                         </p>
                         
-                        connection
-                        <img src="lab4_imgs/IMU.jpg" style="width:100%">
+                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
                         <p></p>
                         
                         <p> It is noticed that the inputs and outputs of each dual motor driver are parallel-coupled, so that we can deliver twice the average current without overheating the chip. The Artemis pins to generate PWM signal to input of motor driver are decided unfortunately by accident after I ruined some of the contiguous pins... But they work as expected eventually. </p>
@@ -89,12 +88,11 @@
                         
                         <p> The video below shows how I connect the components and measure the output signal using oscilloscope.</p>
                             
-                        video: set up with power and oscilloscope
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/dyaZH5ETYSc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         <p> I used <code>analogWrite</code> to define a PWM signal, where, according to <a href="https://cdn.sparkfun.com/assets/resources/4/4/PWM_output_Arduino.pdf" class="link-primary">this documentation</a>, the parameter that sets the duty cycle is an 8-bit unsigned integer, i.e.a value in the range <code>0 ≤ PWM_out_level ≤ 255</code>. I set 100 to pin A15 which represents around 100 / 255 = 39% duty cycle.</p>
                         
-                        PWM code
-                        <img src="lab4_imgs/IMU.jpg" style="width:100%">
+                        <img src="lab5_imgs/PWM.png" style="width:100%">
                         
     
                         
@@ -103,28 +101,29 @@
                         <p> After verifying the connection and outputs, I disassemble the car, cut the wires connecting motors with the factory PCB and replace the PCB with Artemis. I solder the wires of one motor to the motor driver and power the motor driver with external power supply to conduct spin experiment.</p>
                         
                         <p> As the code shows, the wheels should spin in one direction for a second, stop for a second, then spin in the other direction for a second and stop for a second. </p>
-                        spin code
-                        <img src="lab4_imgs/acc_equation.png" style="width:100%">
+
+                        <img src="lab5_imgs/spin.png" style="width:100%">
                         
                         <p> The video shows the wheels perform exactly as expected.</p>
-                        video: spinning
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/gbjH4ISYewM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
                    
                         <p> After ensuring there is no connection error between Artemis and motor driver, the <code>Ground & Vin</code> wires on motor driver are soldered with the power supply wires on the robot, at the same time, the <code>Ground & Vin</code> pins on the other motor driver are soldered in serial, therefore both motor drivers can powered by the battery now.  </p>
                         
                         <p> The video below shows single motor driver powered by robot battery</p>
-                        video:battery spin
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/G4bEFPjzJlc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         <p> Similar to the first motor driver, the input pins of second motor driver is now connected with Artemis side and the output pins are connected with the wires from the other motor. Now two motor drivers control two motors using different PWM signals respectively, while they share the same power supply. The following codes are used to test both motor drivers.</p>
 
-                        code:double
-                        <img src="lab4_imgs/acc_pitch.png" style="width:100%">
+                        <img src="lab4_imgs/double.png" style="width:100%">
                         
                         <p> The spinning pattern is just the same as the way single motor does. The video below shows powered by batteries, both sides of wheels spin as the code defines.</p>
                         
-                        video:double
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/L7KmIUAer1U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         <p> After testing both motor drivers are working properly, components from previous labs are all configured within the car as the picture below demonstrates.</p>
+                        
                         all components
                         <img src="lab4_imgs/gyro_roll.png" style="width:100%">
                         
