@@ -58,119 +58,101 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         
-                        <p>The purpose of this lab is to add the IMU which is equipped with accelerometer and gyroscope to the robot to measure the real-time roll and pitch angles when the robot is running. Besides, at the end of this lab, the Artemis board and connected sensors are achieved to be powered from a battery. The datasheet of the IMU we are using provides lots of useful information which helps to measure and process roll and pitch data.
+                        <p>The purpose of this lab is to change from manual to open loop control of the car. The PCB for manual control is cut off and placed with Artemis, the motors are controlled using two motor driver with PWM signals sent from Artemis pins. At the end of this lab, the car is able to execute a pre-programmed series of moves, using the Artemis board and two dual motor drivers. </p>
+                        
+                        
+                        <p></p>
+                        <h1> Prelab </h1> 
+
+                        <h2 class="section-heading">Motor Driver Connection</h2>
+                        <p> The diagram below shows how I finally connect the whole systems includig Artemis, two motor drivers, motors and batteries.
                         </p>
                         
-                        <p>During this lab, the IMU is firstly set up to test its functions using example codes. THen, the roll and pitch angles are computed using formulas based on IMU raw data readings. Similar to previous labs, the collected data are transmitted to the computer side using BLE. Eventually, the battery is soldered to a JST connector hence to power Artemis and sensors. </p> 
+                        connection
+                        <img src="lab4_imgs/IMU.jpg" style="width:100%">
+                        <p></p>
+                        
+                        <p> It is noticed that the inputs and outputs of each dual motor driver are parallel-coupled, so that we can deliver twice the average current without overheating the chip. The Artemis pins to generate PWM signal to input of motor driver are decided unfortunately by accident after I ruined some of the contiguous pins... But they work as expected eventually. </p>
                         
                         
+                        <h2 class="section-heading">Battery Discussion</h2>
+                        <p> The Artemis and motors are powered using different batteries since Artemis uses much less current while motors consumes a lot. Therefore, the 3.7 V,850 mAh battery with greater energy capacity is used to power the motors, while the 3.7V,650 mAh battery is used to power Artemis. </p>
+                        
+                            
+                       
                         <p></p>
                         <h1> Lab Tasks </h1> 
 
-                        <h2 class="section-heading">Task 1: Set up the IMU</h2>
-                        <p> The IMU is connected to Artemis and tested using example code. The output is shown in the image below.
+                        <h2 class="section-heading">Single Dual Motor Driver</h2>
+                        <p> After soldering the inputs and outputs of one motor driver in parallel, I soldered A15 pin from Artemis to connect with <code>BIN2 & AIN2</code> of the motor driver. I sodered wires on the <code>Ground and Vin</code> pin of the motor driver, so that it can be powered by external power supply using 3.7V voltage (since the battery used to power the motors is 3.7V). Then I write code to generate PWM sigals from A15, send them to motor driver and connect oscilloscope with <code>BOUT2 & AOUT2</code> pins to verify the output from motor driver.
                         </p>
                         
+                        <p> The video below shows how I connect the components and measure the output signal using oscilloscope.</p>
+                            
+                        video: set up with power and oscilloscope
+                        
+                        <p> I used <code>analogWrite</code> to define a PWM signal, where, according to <a href="https://cdn.sparkfun.com/assets/resources/4/4/PWM_output_Arduino.pdf" class="link-primary">this documentation</a>, the parameter that sets the duty cycle is an 8-bit unsigned integer, i.e.a value in the range <code>0 ≤ PWM_out_level ≤ 255</code>. I set 100 to pin A15 which represents around 100 / 255 = 39% duty cycle.</p>
+                        
+                        PWM code
                         <img src="lab4_imgs/IMU.jpg" style="width:100%">
-                        <p></p>
-                        <p></p>
-                        <img src="lab4_imgs/example_output.png" style="width:100%">
+                        
+    
                         
                         
-                        <p> It is noticed that in the example code, the <code>AD0_VAL</code> PIN is defined to be 1 by default. The comment in the example code says the value can be changed to 0 when the ADR jumper is closed. </p>
+                        <h2 class="section-heading">Spinning Wheels</h2>
+                        <p> After verifying the connection and outputs, I disassemble the car, cut the wires connecting motors with the factory PCB and replace the PCB with Artemis. I solder the wires of one motor to the motor driver and power the motor driver with external power supply to conduct spin experiment.</p>
                         
-                        <p>According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of the IMU board, the slave address of the ICM-20948 is <code>b110100X</code> which is 7 bits long. The LSB bit of the 7-bit address is determined by the logic level on pin AD0. This allows two ICM-20948s to be connected to the same I2C bus simultaneously. When used in this configuration, the address of the one of the devices should be b1101000 (pin AD0 is logic low) and the address of the other should be b1101001 (pin AD0 is logic high). </p>
-                        
-                        
-                        <h2 class="section-heading">Task 2: Accelerometer test</h2>
-                        <p> Based on the raw data output from accelerometer, the roll and pitch angles are calculated using the equations shown below.</p>
-                        
-                        
+                        <p> As the code shows, the wheels should spin in one direction for a second, stop for a second, then spin in the other direction for a second and stop for a second. </p>
+                        spin code
                         <img src="lab4_imgs/acc_equation.png" style="width:100%">
+                        
+                        <p> The video shows the wheels perform exactly as expected.</p>
+                        video: spinning
+
                    
-                        <p> The output at {-90, 0, 90} degrees for both roll and pitch angles are plotted using Serial Plotter in Arduino ide as shown below.</p>
+                        <p> After ensuring there is no connection error between Artemis and motor driver, the <code>Ground & Vin</code> wires on motor driver are soldered with the power supply wires on the robot, at the same time, the <code>Ground & Vin</code> pins on the other motor driver are soldered in serial, therefore both motor drivers can powered by the battery now.  </p>
                         
-                        <p> Accelerometer roll output: </p>
-                        <img src="lab4_imgs/acc_roll.png" style="width:100%">
+                        <p> The video below shows single motor driver powered by robot battery</p>
+                        video:battery spin
                         
-                        <p> Accelerometer pitch output: </p>
+                        <p> Similar to the first motor driver, the input pins of second motor driver is now connected with Artemis side and the output pins are connected with the wires from the other motor. Now two motor drivers control two motors using different PWM signals respectively, while they share the same power supply. The following codes are used to test both motor drivers.</p>
+
+                        code:double
                         <img src="lab4_imgs/acc_pitch.png" style="width:100%">
                         
-                        <p> The error of accelerometer measurements at these three degrees are shown in table below, where we can see the errors are basically around 1 degree which are pretty much acceptable. </p>
+                        <p> The spinning pattern is just the same as the way single motor does. The video below shows powered by batteries, both sides of wheels spin as the code defines.</p>
                         
-                        <img src="lab4_imgs/acc_table.png" style="width:100%">
+                        video:double
                         
-                        <p> To further investigate how the noise caused by nearby running RC car can affect the data collected by accelerometer, 3 seconds of "noisy" data for both roll and pitch are recorded hence to compute <a href="https://www.alphabold.com/fourier-transform-in-python-vibration-analysis/" class="link-primary">Fourier Transform in Python</a> to analyse frequency spectrum. </p>
-                        
-                        <p> The frequency spectrum of "noisy" roll data is shown as below. </p>
-                        
-                        <img src="lab4_imgs/roll_freq.png" style="width:100%">
-                        
-                        <p> Following plot shows the frequency spectrum of "noisy" pitch data. </p>
-                        
-                        <img src="lab4_imgs/pitch_freq.png" style="width:100%">
-                        
-                        <p> The data I used are collected within 3 seconds, the number of data points collected is 94 and hence the sampling frequency can be computed as around 31 Hz. The sampling frequency is actually limited by the delay time set in the example code. </p>
-                        
-                        <p> According to those two plots above, despite a spike on 0 Hz, there is only one significant spike in roll frequency spectrum at about 7 Hz, and no obvious spike in pitch frequency spectrum. According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of IMU, this is probably because there is a low pass filter which works from 5.7 Hz to 246 Hz for accelerometer. Therefore, no need to worry about the ambient noise to affect the accuracy of data collected by accelerometer.</p>
-                        
-                        
-                        
-                        
-                        <h2 class="section-heading">Task 3: Gyroscope test</h2>
-                        <p> Based on the raw data readings from gyroscope, the roll and pitch angles are calculated using the formulas given from <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-4-IMU.pdf" class="link-primary">lecture</a>. </p>
-                        
-                        
-                        <p> The output at {-90, 0, 90} degrees for both roll and pitch angles are plotted using Serial Plotter in Arduino ide as shown below. </p>
-                        
-                        <p> Gyroscope roll output: </p>
+                        <p> After testing both motor drivers are working properly, components from previous labs are all configured within the car as the picture below demonstrates.</p>
+                        all components
                         <img src="lab4_imgs/gyro_roll.png" style="width:100%">
                         
-                        <p> Gyroscope pitch output: </p>
-                        <img src="lab4_imgs/gyro_pitch.png" style="width:100%">
-                        
-                        <p>The error of gyroscope measurements at these three degrees are shown in table below. It needs to be noticed that because of the gyroscope drift caused by accumulation error over time resulted from the formulas we use to calcuate angles, the error can become quite large as time goes. Hence the measurements here are conducted just as gyroscope initializes. </p>
-                        
-                         <img src="lab4_imgs/gyro_table.png" style="width:100%">
-                        
-                        <p> To try to investigate the influence from sampling frequency on the accuracy of calculated angles, the frequency is changed from 10 Hz to 100 Hz by adjusting delay time in from 100 ms to 10 ms in the code.</p>
-                        
-                        <p> When the sampling frequency is 10 Hz, the pitch and roll values are as follows when I keep the IMU flat on the table:</p>
-                        
-                        <img src="lab4_imgs/10_Hz_freq_gyro.png" style="width:100%">
-                        
-                        <p>After the sampling frequency is changed to 100 Hz, still keep the IMU flat on the table, though it is still not accurate enough, the drift decreases obviously within same period of time. </p>
                         
                         
-                        <img src="lab4_imgs/100_Hz_freq_gyro.png" style="width:100%">
+                        <h2 class="section-heading">Lower Limit PWM Values</h2>
+                        <p> By conducting several times of experiments, I found that to make my robot start from the rest on the carpet, duty cyle needs to be at least 18%.</p>
+                        video:lower limit PWM
                         
-                        <p>To counteract the negative effects of gyroscope drift on the accuracy of measurements, a complementary filter is implemented as the equation below. </p>
+                        <p> While if the robot needs to make a turn, it needs even higher duty cycle up to ...%</p>
+                        video:lower limit PWM turns
                         
-                        <img src="lab4_imgs/filter_equation.png" style="width:100%">
-                        
-                        <p> where <code>alpha</code> is a weight coefficient. If <code>alpha</code> is 1, <code>theta</code> would be exactly same as accelerometer results. If <code>alpha</code> is 0, <code>theta</code> would be not changed as gyroscope results. Otherwise, <code>theta</code> is a combination of both gyroscope and accelerometer results. </p>
-                        
-                        <p>Since this filter is complementing measurement results of gyroscope, the gyroscope results should dominate, hence theoretically, <code>alpha</code> should be less than 0.5. Also, gyroscope readings are more robust against sudden moves than the readings of accelerometer. After conducting some tests, when <code>alpha</code> = 0.1, with a samll portion of accelerometer data, the drift can be counteracted effectively.  </p>
-                        
-                        
-                        
-                        <h2 class="section-heading">Task 4: Sample data</h2>
-                        <p> This task aims to transmit roll and pitch data collected by accelerometer and gyroscope to computer side using BLE. Since BLE is designed to consume minimal power, and one way it does this is by introducing latency into the connection, the latency can cause delays in message transmission, especially if the message is large or complex. </p>
-                        
-                        <p> To minimize delays during transmission, all the manually set delays and <code>Serial.print</code> commands are erased. According to the <a href="https://cdn.sparkfun.com/assets/7/f/e/c/d/DS-000189-ICM-20948-v1.3.pdf" class="link-primary">datasheet</a> of IMU, the sampling frequency can be up to 1.125 kHz, but because of the BLE transmission limitation, by counting received data on computer side within a specific period of time, the actual sampling frequency can be computed as around only 50 Hz.
-                        </p>
-                        
-                        <p> The IMU data are combined with ToF distance sensor data together with time-stamp to be stored in an array on the Artemis side, and then send to computer side via BLE. Video below shows the data from sensors are stored in an array in Artemis. Every time the readings update, they are stored and send immediately and the array is emptied to store new readings, hence to prevent running out of memory limitation by BLE transmission. </p>
-                        
-                        <p></p>
-                        
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/FMj6If_itQI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
-                        <p> Eventually, five seconds of ToF and IMU data are sent to computer side via BLE as shown in video below. </p>
-                        
-                        <p></p>
+                        <p> It needs to be noticed that because of the different ground friction and remianing battery energy, the lower limit PWM results can vary a bit.</p>
 
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/dT4xr1YZdR0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        
+                        <h2 class="section-heading">Straight Line Running</h2>
+                        <p> Since both motor drivers are connected in serial with robot battery, ideally their power should be the same, and hence the spinning speed for both motors are the same. While to further test if both motors are actually spinning at the same rate when their duty cycle of PWM input signal are the same, I set PWM duty cycle of both motor drivers to be 35 % to try to examine if the robot can run a straight line. As video shows, basically the robot can run in a straight line with acceptable deviation when distance becomes longer. </p>
+                        
+                        video: straight line
+                        
+                        <p> While as I increase the duty cycle to try to run the robot with a higher speed, I found the devitation becomes more considerable as video below shows. It is probably because the motors need fidderent time to accelerate to the demanding speed, i.e. the acceleration of two motors are different.</p>
+                        video: higher speed straight line
+                        
+                        
+                        
+                        
+                        
                         
                         
                         
