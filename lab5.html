@@ -149,14 +149,9 @@
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/lJok8xEEyNc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         
+
                         
-                        
-                        
-                        
-                        
-                        
-                        
-                        <h2 class="section-heading">Task 5: Cut the Coord </h2>
+                        <h2 class="section-heading">Open Loop Control </h2>
                         <p> In this task, the cables of 3.7 V, 650 mAh battery are soldered with JST connector so that it can be used as power source of Artemis board and sensors connected to the board. While the 3.7 V, 850 mAh battery is used to power up the motors of robot since the motors comsume more energy than the board and sensors.
                         </p>
                         
@@ -166,24 +161,30 @@
                         
                         
                         
-                        <h2 class="section-heading">Task 6: Record a shunt </h2>
-                        <p> Finally, after the Artemis and sensors are mounted on the robot, I play with the car for a while to test its motors' performance firstly. It is found that when the battery is fully charged, both sides of motors run well as expected. However, when the battery power runs low, for my robot, left side motor speed becomes faster than the other side's. </p>
                         
-                        <p> Then, the Artemis and sensors are powered by the battery, I started the bluetooth connection between Artemis and my computer. I played my robot for a while, made some movements such as go forward and backward, turn left and right, spin around. It needs to be clarified that since the <b>XSHUNT</b> pins of both ToF sensors are connected with Artemis using male and female wire, the wires and sensors may be damaged if I do a flip, therefore, I gave up flip movement.</p>
                         
-                        <p>The process of building bluetooth connection, playing with the robot, collect and send 20 seconds data to the computer side, and plot the data versus time is shown in video below.</p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/uF3GpKz_OEQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
-                        <p>The distance data versus time is plotted as below. </p>
-                        
-                        <img src="lab4_imgs/distance_data.png" style="width:100%">
-                        
-                        <p> The roll and pitch data collected by IMU are plotted as below.</p>
-                        
-                        <img src="lab4_imgs/roll_pitch-data.png" style="width:100%">
                         
                         <p></p>
+                        <h1> Additional Tasks </h1> 
+                        <h2 class="section-heading">analogWrite Frequency Discussion </h2>
+                        <p> According to the PWM measurement by oscilloscope shown below, one horizontal block represents 2.50 ms and a period of PWM occupies about 2.2 blocks which is <b>5.5 ms</b>. Therefore, on Artemis, the frequency of <code>analogWrite</code> function generates is about <b>182 Hz</b>. </p>
+                        
+                        <img src="lab5_imgs/oscilloscope.jpg" style="width:100%">
+                        
+                        <p> In lab 3, we have found that the sampling period of ToF sensors are around 20 ms which is much longer than PWM signal period. If the speed of motors are controlled based on data of ToF sensors, current frequency of PWM signal is fast enough to adjust motors' speed to react with obstacles. </p>
+                        
+                        <p> While even faster PWM signals can make motors respond to our commands faster by changeing motors' speeds within a shorter time. This can help achieve more difficult stunts with requirement of faster responses and more precise control.</p>
+                        
+                        
+                        <h2 class="section-heading">Lowest PWM Value Speed </h2>
+                        <p> In this task, the cables of 3.7 V, 650 mAh battery are soldered with JST connector so that it can be used as power source of Artemis board and sensors connected to the board. While the 3.7 V, 850 mAh battery is used to power up the motors of robot since the motors comsume more energy than the board and sensors.
+                        </p>
+                        
+                        <p> Eventually, the battery is connected to the Artemis with sensors, and they are mounted on the robot with tape as shown in the figure below. </p>
+                        
+                        <img src="lab4_imgs/sensors_mounted.jpg" style="width:100%">
+                        
                         
                         
                         <p>
