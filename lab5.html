@@ -122,10 +122,10 @@
                         
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/L7KmIUAer1U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
-                        <p> After testing both motor drivers are working properly, components from previous labs are all configured within the car as the picture below demonstrates.</p>
+                        <p> After testing both motor drivers are working properly, components from previous labs including IMU and ToF sensors are all configured within the car as the picture below demonstrates.</p>
                         
                         all components
-                        <img src="lab4_imgs/gyro_roll.png" style="width:100%">
+                        <img src="lab5_imgs/structure.jpg" style="width:100%">
                         
                         
                         
@@ -152,21 +152,18 @@
 
                         
                         <h2 class="section-heading">Open Loop Control </h2>
-                        <p> In this task, the cables of 3.7 V, 650 mAh battery are soldered with JST connector so that it can be used as power source of Artemis board and sensors connected to the board. While the 3.7 V, 850 mAh battery is used to power up the motors of robot since the motors comsume more energy than the board and sensors.
-                        </p>
+                        <p> Eventually, we come to the final target of this lab: to achieve an open loop control of the robot. The robot is simply hardcoded to do several actions including go forward and backward, spin and turns, as shown in the video below. </p>
                         
-                        <p> Eventually, the battery is connected to the Artemis with sensors, and they are mounted on the robot with tape as shown in the figure below. </p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/F5j9wgzgzXo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
-                        <img src="lab4_imgs/sensors_mounted.jpg" style="width:100%">
+                        <p> The codes for my robot actions are demonstrated as following. </p>
                         
-                        
-                        
-                        
-                        
-                        
+                        code
                         
                         <p></p>
                         <p></p>
+                        <p></p>
+                        
                         <h1> Additional Tasks </h1> 
                         <h2 class="section-heading">analogWrite Frequency Discussion </h2>
                         <p> According to the PWM measurement by oscilloscope shown below, one horizontal block represents 2.50 ms and a period of PWM occupies about 2.2 blocks which is <b>5.5 ms</b>. Therefore, on Artemis, the frequency of <code>analogWrite</code> function generates is about <b>182 Hz</b>. </p>
@@ -179,12 +176,12 @@
                         
                         
                         <h2 class="section-heading">Lowest PWM Value Speed </h2>
-                        <p> In this task, the cables of 3.7 V, 650 mAh battery are soldered with JST connector so that it can be used as power source of Artemis board and sensors connected to the board. While the 3.7 V, 850 mAh battery is used to power up the motors of robot since the motors comsume more energy than the board and sensors.
-                        </p>
+                        <p> To overcome ground friction, a higher duty cycle percent (20%) of 0.5 second is set to give robot a higher initial speed start from static state. Then, after conducting several experiments, it is found that the robot can move with the lowest duty cycle of 15%, as shown in video below. </p>
                         
-                        <p> Eventually, the battery is connected to the Artemis with sensors, and they are mounted on the robot with tape as shown in the figure below. </p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/keNqe7JZR3k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
-                        <img src="lab4_imgs/sensors_mounted.jpg" style="width:100%">
+                        <p> What interesting is that, shown as the video below, by setting even lower duty cycle percentage to 12%, after the intial 0.5 second of acceleration, only one side of wheels are spinning while on the other side, we can clearly hear the motor spinning but seems its speed is not enough to drive the wheels. These cheap motors give different performances when they are fed by PWM signal with same duty cycle. </p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/kBrJdX5hSyA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         
                         
