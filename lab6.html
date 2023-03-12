@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
+        <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
+        <title>Fast Robots: Lab 5</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">ECE 5160 · Fast Robots</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me & Project</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Lab5:</h1>
+                            <h1>Motors & Open Loop Control</h1>
+                            <h2 class="subheading">Change the robot from manual to open loop control.</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="about.html">Zhongqi Tao</a>
+                                on March 7, 2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        
+                        <p>The purpose of this lab is to change from manual to open loop control of the car. The PCB for manual control is cut off and placed with Artemis, the motors are controlled using two motor driver with PWM signals sent from Artemis pins. At the end of this lab, the car is able to execute a pre-programmed series of moves, using the Artemis board and two dual motor drivers. </p>
+                        
+                        
+                        <p></p>
+                        <h1> Prelab </h1> 
+
+                        <h2 class="section-heading">Motor Driver Connection</h2>
+                        <p> The diagram below shows how I finally connect the whole systems includig Artemis, two motor drivers, motors and batteries.
+                        </p>
+                        
+                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                        <p></p>
+                        
+                        <p> It is noticed that the inputs and outputs of each dual motor driver are parallel-coupled, so that we can deliver twice the average current without overheating the chip. The Artemis pins to generate PWM signal to input of motor driver are decided unfortunately by accident after I ruined some of the contiguous pins... But they work as expected eventually. </p>
+                        
+                        
+                        <h2 class="section-heading">Battery Discussion</h2>
+                        <p> The Artemis and motors are powered using different batteries since Artemis uses much less current while motors consumes a lot. Therefore, the 3.7 V,850 mAh battery with greater energy capacity is used to power the motors, while the 3.7V,650 mAh battery is used to power Artemis. </p>
+                        
+                            
+                       
+                        <p></p>
+                        <h1> Lab Tasks </h1> 
+
+                        <h2 class="section-heading">Single Dual Motor Driver</h2>
+                        <p> After soldering the inputs and outputs of one motor driver in parallel, I soldered A15 pin from Artemis to connect with <code>BIN2 & AIN2</code> of the motor driver. I sodered wires on the <code>Ground and Vin</code> pin of the motor driver, so that it can be powered by external power supply using 3.7V voltage (since the battery used to power the motors is 3.7V). Then I write code to generate PWM sigals from A15, send them to motor driver and connect oscilloscope with <code>BOUT2 & AOUT2</code> pins to verify the output from motor driver.
+                        </p>
+                        
+                        <p> The video below shows how I connect the components and measure the output signal using oscilloscope.</p>
+                            
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/dyaZH5ETYSc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> I used <code>analogWrite</code> to define a PWM signal, where, according to <a href="https://cdn.sparkfun.com/assets/resources/4/4/PWM_output_Arduino.pdf" class="link-primary">this documentation</a>, the parameter that sets the duty cycle is an 8-bit unsigned integer, i.e.a value in the range <code>0 ≤ PWM_out_level ≤ 255</code>. I set 100 to pin A15 which represents around 100 / 255 = 39% duty cycle.</p>
+                        
+                        <img src="lab5_imgs/PWM.png" style="width:100%">
+                        
+    
+                        
+                        
+                        <h2 class="section-heading">Spinning Wheels</h2>
+                        <p> After verifying the connection and outputs, I disassemble the car, cut the wires connecting motors with the factory PCB and replace the PCB with Artemis. I solder the wires of one motor to the motor driver and power the motor driver with external power supply to conduct spin experiment.</p>
+                        
+                        <p> As the code shows, the wheels should spin in one direction for a second, stop for a second, then spin in the other direction for a second and stop for a second. </p>
+
+                        <img src="lab5_imgs/spin.png" style="width:100%">
+                        
+                        <p> The video shows the wheels perform exactly as expected.</p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/gbjH4ISYewM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+                   
+                        <p> After ensuring there is no connection error between Artemis and motor driver, the <code>Ground & Vin</code> wires on motor driver are soldered with the power supply wires on the robot, at the same time, the <code>Ground & Vin</code> pins on the other motor driver are soldered in serial, therefore both motor drivers can powered by the battery now.  </p>
+                        
+                        <p> The video below shows single motor driver powered by robot battery</p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/G4bEFPjzJlc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> Similar to the first motor driver, the input pins of second motor driver is now connected with Artemis side and the output pins are connected with the wires from the other motor. Now two motor drivers control two motors using different PWM signals respectively, while they share the same power supply. The following codes are used to test both motor drivers.</p>
+
+                        <img src="lab5_imgs/double.png" style="width:100%">
+                        
+                        <p> The spinning pattern is just the same as the way single motor does. The video below shows powered by batteries, both sides of wheels spin as the code defines.</p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/L7KmIUAer1U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> After testing both motor drivers are working properly, components from previous labs including IMU and ToF sensors are all configured within the car as the picture below demonstrates.</p>
+                        
+                        
+                        <img src="lab5_imgs/structure.jpg" style="width:100%">
+                        
+                        
+                        
+                        <h2 class="section-heading">Lower Limit PWM Values</h2>
+                        <p> By conducting several times of experiments, I found that to make my robot start from the rest on the carpet to move forward, duty cyle of PWM needs to be at least 18% to provide motors with enough power.</p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/wSj64g5gTjY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> While if the robot needs to make a turn, it will counteract with even more friction and hence it needs higher duty cycle up to 60% to provide higher speed. The video below shows robot goes straight with 20% duty cycle speed and makes right turn with a speed of 60% duty cycle. Since the ground is carpet, the friction is much greater than the lab ground, hence the "make turn" duty cycle can be higher as well.</p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/UKeepWWRuqU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> It needs to be noticed that because of the different ground friction and remaining battery energy, the lower limit PWM results can vary.</p>
+
+                        
+                        
+                        <h2 class="section-heading">Straight Line Running</h2>
+                        <p> Since both motor drivers are connected in serial with robot battery, ideally their power should be the same, and hence the spinning speed for both motors are the same. While to further test if both motors are actually spinning at the same rate when their duty cycle of PWM input signal are the same, I set PWM duty cycle of both motor drivers to be 35 % to try to examine if the robot can run a straight line. As video shows, basically the robot can run in a straight line with acceptable deviation when distance becomes longer. </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/cXp3fh8nUAE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> While as I increase the duty cycle to try to run the robot with a higher speed, I found the devitation becomes more considerable as video below shows. It is probably because the motors need fidderent time to accelerate to the demanding speed, i.e. the acceleration of two motors are different.</p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/lJok8xEEyNc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        
+
+                        
+                        <h2 class="section-heading">Open Loop Control </h2>
+                        <p> Eventually, we come to the final target of this lab: to achieve an open loop control of the robot. The robot is simply hardcoded to do several actions including go forward and backward, spin and turns, as shown in the video below. </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/F5j9wgzgzXo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> The codes for my robot actions are demonstrated as following. </p>
+                        
+                        <script src="https://gist.github.com/zt88/28abdb9b460aa391f5a196455fc7c928.js"></script>
+                        
+                        <p></p>
+                        <p></p>
+                        <p></p>
+                        
+                        <h1> Additional Tasks </h1> 
+                        <h2 class="section-heading">analogWrite Frequency Discussion </h2>
+                        <p> According to the PWM measurement by oscilloscope shown below, one horizontal block represents 2.50 ms and a period of PWM occupies about 2.2 blocks which is <b>5.5 ms</b>. Therefore, on Artemis, the frequency of <code>analogWrite</code> function generates is about <b>182 Hz</b>. </p>
+                        
+                        <img src="lab5_imgs/oscilloscope.jpg" style="width:100%">
+                        
+                        <p> In lab 3, we have found that the sampling period of ToF sensors are around 20 ms which is much longer than PWM signal period. If the speed of motors are controlled based on data of ToF sensors, current frequency of PWM signal is fast enough to adjust motors' speed to react with obstacles. </p>
+                        
+                        <p> While even faster PWM signals can make motors respond to our commands faster by changeing motors' speeds within a shorter time. This can help achieve more difficult stunts with requirement of faster responses and more precise control.</p>
+                        
+                        
+                        <h2 class="section-heading">Lowest PWM Value Speed </h2>
+                        <p> To overcome ground friction, a higher duty cycle percent (20%) of 0.5 second is set to give robot a higher initial speed start from static state. Then, after conducting several experiments, it is found that the robot can move with the lowest duty cycle of 15%, as shown in video below. </p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/keNqe7JZR3k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p> What interesting is that, shown as the video below, by setting even lower duty cycle percentage to 12%, after the intial 0.5 second of acceleration, only one side of wheels are spinning while on the other side, we can clearly hear the motor spinning but seems its speed is not enough to drive the wheels. These cheap motors give different performances when they are fed by PWM signal with same duty cycle. </p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/kBrJdX5hSyA" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        
+                        
+                        <p>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/zt88/Fast-Robots">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Fast Robots 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
