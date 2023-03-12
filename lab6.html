@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
         <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
-        <title>Fast Robots: Lab 5</title>
+        <title>Fast Robots: Lab 6</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -39,13 +39,13 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <div class="post-heading">
-                            <h1>Lab5:</h1>
-                            <h1>Motors & Open Loop Control</h1>
-                            <h2 class="subheading">Change the robot from manual to open loop control.</h2>
+                            <h1>Lab6:</h1>
+                            <h1>Closed-Loop Control (PID)</h1>
+                            <h2 class="subheading">Control protocols for "autonomous" vehicle</h2>
                             <span class="meta">
                                 Posted by
                                 <a href="about.html">Zhongqi Tao</a>
-                                on March 7, 2023
+                                on March 14, 2023
                             </span>
                         </div>
                     </div>
@@ -58,15 +58,26 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         
-                        <p>The purpose of this lab is to change from manual to open loop control of the car. The PCB for manual control is cut off and placed with Artemis, the motors are controlled using two motor driver with PWM signals sent from Artemis pins. At the end of this lab, the car is able to execute a pre-programmed series of moves, using the Artemis board and two dual motor drivers. </p>
+                        <p> The purpose of this lab is to get experience with PID control: I am going to implement PID control in my robot to finish the position control task. Basically the idea of this task is to have my robot drive as fast as possible towards the wall and stop when it is exactly 1 foot (304 mm) away from the wall using feedback from the ToF distance sensor. The PID controller in this task will be controlling the speed of my robot by considering the distance between my robot and the wall. </p>
+                        <p> </p>
                         
                         
                         <p></p>
                         <h1> Prelab </h1> 
-
-                        <h2 class="section-heading">Motor Driver Connection</h2>
-                        <p> The diagram below shows how I finally connect the whole systems includig Artemis, two motor drivers, motors and batteries.
-                        </p>
+                        <h2 class="section-heading">BLE Debug System</h2>
+                        <p> Before applying the PID controller to my robot, since the robot needs to be placed on the ground to conduct testing, there will not be any cable available to connect the robot to my computer so that to use <code>Serial.print</code> to print out distance sensor readings and any other information for debug usage. Therefore, it is essential to design a system that helps to debug my implementation by plotting out the distance output by front ToF sensor and the PWM output controlled by my PID controller, so that I can adjust PID controller parameters effectively. </p>
+                        
+                        <p> A good techinique is to send commands to my robot over bluetooth, executing designed PID control for a fixed amount of time (5s for example) and collect the data including distances read from the front sensor and PWM output from Artemis, and send the data back with timestamps to computer via BLE, so that I can plot the data to have a look. </p>
+                        
+                        <p> In practical, I design my debug systems as follows: </p> 
+                        
+                        <p></p> 
+                        1. Laptop: a callback function is defined to receive and store string messages sent from robot which contain timestamped front sensor readings and Motor input from Artemis (processed PWM duty percentage).
+                        2. Laptop -> Robot: after connecting Artemis with laptop, a defined function <code>PID_control</code> on Artemis side is called from computer side via bluetooth to start the PID control task (position control task).
+                        
+                        
+                        
+                        
                         
                         <img src="lab5_imgs/schematic.jpg" style="width:100%">
                         <p></p>
