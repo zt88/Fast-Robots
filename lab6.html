@@ -77,17 +77,17 @@
                         callback function
                         <img src="lab5_imgs/schematic.jpg" style="width:100%">
                         
-                        <p> 2. Computer -> Robot: after connecting Artemis with laptop, a defined function <code>PID_control</code> on Artemis side is called with parameter setting of PID control from computer side via bluetooth to start the PID control task (position control task). It needs to be noticed that to avoid exceeding storage space of Artemis, I decide to transmit string message immdeiately every time sensor reading is updated and hence the PWM is updated by PID controller.
+                        <p> 2. Computer -> Robot: after connecting Artemis with laptop, a defined function <code>PID_control</code> on Artemis side is called with parameter setting of PID control from computer side via bluetooth to start the PID control task (position control task). It needs to be noticed that to avoid exceeding storage space of Artemis while preventing significant delay during the task, I decide to create three int arrays in Artemis side to store timestamps, distance readings from front ToF sensor and PWM duty cycle percentage processed by real time PID control. After the task is finished, the data in the arrays are then transmitted to computer side using a for loop, where each loop only one data from each array are extracted into a string and transmitted so that to prevent transmission memory overflow.    
                         </p>
                         
                         PID_control code snippet
                         <img src="lab5_imgs/schematic.jpg" style="width:100%">
                         
-                        <p> 3. Robot -> Computer: during the 5 seconds testing, the robot will send the messages to the computer side which are stored in a list through the previously defined callback function. </p>
+                        <p> 3. Robot -> Computer: After the 5 seconds testing, the robot will send the data to the computer side which are all stored in a list through the previously defined callback function. </p>
                         
-                        <p> 4. Computer: all the digit messages from string are extracted and stored into lists containing timestamps, front sensor distances readings and PWM duty cycle percentage correspondingly.</p>
+                        <p> 4. Computer: all the digit messages from the data are extracted and stored into lists containing timestamps, front sensor distances readings and PWM duty cycle percentage correspondingly.</p>
                         
-                        <p> 5. Computer: eventually, the time v.s. distance and time v.s. PWM are plotted. </p>
+                        <p> 5. Computer: eventually, the time v.s. distance and time v.s. PWM can be plotted. </p>
                         
        
                         
@@ -110,9 +110,9 @@
                         <h2 class="section-heading">Range & Sampling time Discussion</h2>
                         <p> Based on the tests from previous labs, we have known that the sampling frequency of ToF sensor is around 20 Hz. During the tests of PID control, an interesting phenomenon is found that because of inertance and sampling frequency limitation, the vehicle may pass the 304 mm targeted stop distance. Therefore, a condition is added to ensure that if the distance reading is less than 304 mm, in which case the error becomes negative, the PID controller computed PWM duty cycle percentage value is reversed and allocated to backward function to make the robot move backward, hence looping around the stop line until the robot stops exactly when distance reading is 304 mm. </p>
                         
-                        <p> Another problem is that, since I am implementing short distance mode on the ToF sensor because of its better ambient disturbance immunity, the effective sensor reading range is upto around 1.4 meters and if the distance we are trying to measure is longer, the sensor reading just becomes zero. However, we may start the robot even further away from the wall, which leads to limitation of the sensor reading. To address the problem, I decided to hardcode my robot so that if the reading is zero, which is unachievable if there is really something quite close to the sensor, the robot just moves forward with a high speed until the reading is not zero where PID control starts to work based on the sensible readings.</p>
-                        code snippet for hardcoded part
-                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                        
+                        <p> Another problem is that, since I am implementing short distance mode on the ToF sensor because of its better ambient disturbance immunity, the effective sensor reading range is upto around 1.4 meters and if the distance we are trying to measure is longer, the sensor reading just becomes zero. However, we may start the robot even further away from the wall, which leads to limitation of the sensor reading. To address the problem, while consiering effectiveness of PID control implementation, I eventually adjust the distance mode of front distance sensor to <code>Long</code>, so that we can get effective sensor readings away from the wall upto 4 meters. </p>
+                        
                         
                         
                         
