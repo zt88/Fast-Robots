@@ -82,10 +82,12 @@
                         <img src="lab6_imgs/PID_control.png" style="width:100%">
                             
                         <p> As the snippet shows, this function just receive set values of Kp, Ki and Kd from computer side and initialize several variables which all should be global variables, most importantly, this function sets the boolean value <code>PID_run</code> to true, which acts as a flag, so that the real PID control in the <code>void loop</code> can start to work.</p>
+                        <p></p>
+                        <script src="https://gist.github.com/zt88/863a050a0c1c09fe8361cf80347097e7.js"></script>
                         
                         <p> After the task is finished (when distance sensor reading is 304 mm, the robot stops moving), I can manually send stop command to trigger the <code>PID_run</code> flag to be false to stop PID control, followed with a <code>stop()</code> function to set motors stop spinning. </p>
                          <p></p>
-                        <img src="lab6_imgs/stop.png" style="width:100%">
+                        <script src="https://gist.github.com/zt88/bea0137be66fd3469a953e96193b2dbd.js"></script>
                             
                         <p> 3. Robot -> Computer: Then I can call the function <code>send_PID_data</code> to send timestamps, distance readings and PWM duty cyce percentage stored in the arrays to the computer side. Since I initilaize the array with 1000 elements, but it is likely that the task finishes before the array is fully occupied, therefore I added an <code>if</code> condition there to prevent sending initialized 0s in the array.</p>
                         
