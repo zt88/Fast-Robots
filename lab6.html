@@ -71,23 +71,30 @@
                         
                         <p> In practical, I design my debug systems as follows: </p> 
                         
-                        <p>1. Computer: a callback function <code>PID_debug</code> is defined to receive and store string messages sent from robot which contain timestamped front sensor readings and Motor input from Artemis (processed PWM duty percentage).
+                        <p>1. Computer: a callback function <code>PID_debug</code> is defined to receive and store string messages sent from robot which contain timestamped front sensor readings and Motor input from Artemis (processed PWM duty cycle percentage).
                         </p> 
                         
                         callback function
                         <img src="lab5_imgs/schematic.jpg" style="width:100%">
                         
-                        <p> 2. Computer -> Robot: after connecting Artemis with laptop, a defined function <code>PID_control</code> on Artemis side is called with parameter setting of PID control from computer side via bluetooth to start the PID control task (position control task). It needs to be noticed that to avoid exceeding storage space of Artemis while preventing significant delay during the task, I decide to create three int arrays in Artemis side to store timestamps, distance readings from front ToF sensor and PWM duty cycle percentage processed by real time PID control. After the task is finished, the data in the arrays are then transmitted to computer side using a for loop, where each loop only one data from each array are extracted into a string and transmitted so that to prevent transmission memory overflow.    
+                        <p> 2. Computer -> Robot: after connecting Artemis with laptop, a defined function <code>PID_control</code> on Artemis side is called with parameter (Kp, Ki, Kd) setting of PID control from computer side via bluetooth to start the PID control task (position control task). It needs to be noticed that to avoid exceeding storage space of Artemis while preventing significant delay during the task, I decide to create three int arrays in Artemis side to store timestamps, distance readings from front ToF sensor and PWM duty cycle percentage processed by real time PID control. After the task is finished, the data in the arrays are then transmitted to computer side using a for loop, where each loop only one data from each array are extracted into a string and transmitted so that to prevent transmission memory overflow.    
                         </p>
                         
                         PID_control code snippet
                         <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                            
+                        <p> As the snippet shows, this function just receive set values of Kp, Ki and Kd from computer side and initialize several variables which all should be global variables, most importantly, this function sets the boolean value <code>PID_run</code> to true, which acts as a flag, so that the real PID control in the <code>void loop</code> can start to work.</p>
                         
-                        <p> 3. Robot -> Computer: After the 5 seconds testing, the robot will send the data to the computer side which are all stored in a list through the previously defined callback function. </p>
+                        <p> After the task is finished (when distance sensor reading is 304 mm, the robot stops moving), I can manually send stop command to trigger the <code>PID_run</code> flag to be false to stop PID control, followed with a <code>stop()</code> function to set motors stop spinning. </p>
+                         
+                        stop code snippet
+                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                            
+                        <p> 3. Robot -> Computer: Then I can call the function <code>send_PID_data</code> to send timestamps, distance readings and PWM duty cyce percentage stored in the arrays to the computer side. Since I initilaize the array with 1000 elements, but it is likely that the task finishes before the array is fully occupied, therefore I added an <code>if</code> condition there to prevent sending initialized 0s in the array.</p>
                         
                         <p> 4. Computer: all the digit messages from the data are extracted and stored into lists containing timestamps, front sensor distances readings and PWM duty cycle percentage correspondingly.</p>
                         
-                        <p> 5. Computer: eventually, the time v.s. distance and time v.s. PWM can be plotted. </p>
+                        <p> 5. Computer: eventually, the time v.s. distance and time v.s. PWM duty cycle percentage can be plotted. </p>
                         
        
                         
@@ -96,14 +103,16 @@
                         <h1> Lab Task: Position Control </h1> 
 
                         <h2 class="section-heading">PID Parameter Discussion</h2>
-                        <p> In this task, the error of my PID control system is defined as the difference between measured distance from front sensor and the targeted stop distance which is 304 mm. Since I am adjusting my PWM signal based on duty cycle percentage (<code>0% ~ 100%</code>) instead of <code>0 ~ 255</code>, after conducting several times of testing, I define my PID control parameters as Kp = ..., Ki = ..., Kd = ... </p>
-                        PID_control code snippet: Kp, Ki, Kd and error part
-                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                        <p> In this task, the error of my PID control system is defined as the difference between measured distance from front sensor and the targeted stop distance which is 304 mm. Since I am adjusting my PWM signal based on duty cycle percentage (<code>0% ~ 100%</code>) instead of <code>0 ~ 255</code>, after conducting several times of testing, I define my PID control parameters as Kp = 0.05, Ki = 0.0001, Kd = 0. </p>
+                        <p> </p>
+                        <script src="https://gist.github.com/zt88/0eb9232b7b27bd7bb89cc185b6be0194.js"></script>
                         
                         <p></p>
                         <p> According to the experiments from previous labs, the robot will not move if PWM duty cycle is less than 25%, therefore a duty cycle percentage limit function is defined to ensure a reasonable value to be set for PWM. If the duty cycle percentage computed by PID is greater than 100, it will be set as 100 meaning full duty cycle of PWM. If it is computed less than 25, it will be set as 25 to keep robot moving. </p>
-                        dc_limit function
-                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                        
+                        <p> I code some helper functions to help control the motor more efficiently. </p>
+                        <p> </p>
+                        <script src="https://gist.github.com/zt88/3b8f59ed3b84603fdfad41927133a69d.js"></script>
                         
                         
                         <p></p>
@@ -122,18 +131,14 @@
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/gbjH4ISYewM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         
                         <p></p>
-                        <p> The eventual distance sensor reading shows how far the robot really stops away from the wall. </p>
-                        final distance reading from sensor
+                        <p> The distance sensor reading plot shows the distance between the robot and the wall during the task. </p>
+                        distance
                         <img src="lab5_imgs/schematic.jpg" style="width:100%">
                         
                         <p></p>
-                        <p> The time v.s. front ToF distance sensor reading plot is shown as below. </p>
-                        time vs distance
-                        <img src="lab5_imgs/spin.png" style="width:100%">
-                        
                         <p></p>
                         <p> The time v.s. PWM duty cycle percentage plot is shown following. </p>
-                        time vs PWM
+                        PWM
                         <img src="lab5_imgs/spin.png" style="width:100%">
 
                         
