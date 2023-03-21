@@ -45,7 +45,7 @@
                             <span class="meta">
                                 Posted by
                                 <a href="about.html">Zhongqi Tao</a>
-                                on March 14, 2023
+                                on March 21, 2023
                             </span>
                         </div>
                     </div>
@@ -73,22 +73,19 @@
                         
                         <p>1. Computer: a callback function <code>PID_debug</code> is defined to receive and store string messages sent from robot which contain timestamped front sensor readings and Motor input from Artemis (processed PWM duty cycle percentage).
                         </p> 
-                        
-                        callback function
-                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                        <p></p>
+                        <img src="lab6_imgs/callback function.png" style="width:100%">
                         
                         <p> 2. Computer -> Robot: after connecting Artemis with laptop, a defined function <code>PID_control</code> on Artemis side is called with parameter (Kp, Ki, Kd) setting of PID control from computer side via bluetooth to start the PID control task (position control task). It needs to be noticed that to avoid exceeding storage space of Artemis while preventing significant delay during the task, I decide to create three int arrays in Artemis side to store timestamps, distance readings from front ToF sensor and PWM duty cycle percentage processed by real time PID control. After the task is finished, the data in the arrays are then transmitted to computer side using a for loop, where each loop only one data from each array are extracted into a string and transmitted so that to prevent transmission memory overflow.    
                         </p>
-                        
-                        PID_control code snippet
-                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+
+                        <img src="lab6_imgs/PID_control.png" style="width:100%">
                             
                         <p> As the snippet shows, this function just receive set values of Kp, Ki and Kd from computer side and initialize several variables which all should be global variables, most importantly, this function sets the boolean value <code>PID_run</code> to true, which acts as a flag, so that the real PID control in the <code>void loop</code> can start to work.</p>
                         
                         <p> After the task is finished (when distance sensor reading is 304 mm, the robot stops moving), I can manually send stop command to trigger the <code>PID_run</code> flag to be false to stop PID control, followed with a <code>stop()</code> function to set motors stop spinning. </p>
-                         
-                        stop code snippet
-                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                         <p></p>
+                        <img src="lab6_imgs/stop.png" style="width:100%">
                             
                         <p> 3. Robot -> Computer: Then I can call the function <code>send_PID_data</code> to send timestamps, distance readings and PWM duty cyce percentage stored in the arrays to the computer side. Since I initilaize the array with 1000 elements, but it is likely that the task finishes before the array is fully occupied, therefore I added an <code>if</code> condition there to prevent sending initialized 0s in the array.</p>
                         
@@ -132,14 +129,14 @@
                         
                         <p></p>
                         <p> The distance sensor reading plot shows the distance between the robot and the wall during the task. </p>
-                        distance
-                        <img src="lab5_imgs/schematic.jpg" style="width:100%">
+                        <p></p>
+                        <img src="lab6_imgs/distance.png" style="width:100%">
                         
                         <p></p>
                         <p></p>
                         <p> The time v.s. PWM duty cycle percentage plot is shown following. </p>
-                        PWM
-                        <img src="lab5_imgs/spin.png" style="width:100%">
+                        <p></p>
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
 
                         
                         
