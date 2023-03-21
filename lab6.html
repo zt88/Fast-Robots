@@ -91,6 +91,12 @@
                             
                         <p> 3. Robot -> Computer: Then I can call the function <code>send_PID_data</code> to send timestamps, distance readings and PWM duty cyce percentage stored in the arrays to the computer side. Since I initilaize the array with 1000 elements, but it is likely that the task finishes before the array is fully occupied, therefore I added an <code>if</code> condition there to prevent sending initialized 0s in the array.</p>
                         
+                        <p></p>
+                        
+                        <script src="https://gist.github.com/zt88/1c946e8b7359807241ad57ef5aea14ea.js"></script>
+                        
+                        <p></p>
+                        
                         <p> 4. Computer: all the digit messages from the data are extracted and stored into lists containing timestamps, front sensor distances readings and PWM duty cycle percentage correspondingly.</p>
                         
                         <p> 5. Computer: eventually, the time v.s. distance and time v.s. PWM duty cycle percentage can be plotted. </p>
