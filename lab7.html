@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
+        <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
+        <title>Fast Robots: Lab 7</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">ECE 5160 · Fast Robots</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me & Project</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Lab7:</h1>
+                            <h1> Kalman Filter </h1>
+                            <h2 class="subheading">Sensor Fusion</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="about.html">Zhongqi Tao</a>
+                                on March 21, 2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        
+                        <p> The purpose of this lab is to get experience with PID control: I am going to implement PID control in my robot to finish the position control task. Basically the idea of this task is to have my robot drive as fast as possible towards the wall and stop when it is exactly 1 foot (304 mm) away from the wall using feedback from the ToF distance sensor. The PID controller in this task will be controlling the speed of my robot by considering the distance between my robot and the wall. </p>
+                        <p> </p>
+                        
+                        
+                        <p></p>
+                        <h1> Prelab </h1> 
+                        <h2 class="section-heading">BLE Debug System</h2>
+                        <p> Before applying the PID controller to my robot, since the robot needs to be placed on the ground to conduct testing, there will not be any cable available to connect the robot to my computer so that to use <code>Serial.print</code> to print out distance sensor readings and any other information for debug usage. Therefore, it is essential to design a system that helps to debug my implementation by plotting out the distance output by front ToF sensor and the PWM output controlled by my PID controller, so that I can adjust PID controller parameters effectively. </p>
+                        
+                        <p> A good techinique is to send commands to my robot over bluetooth, executing designed PID control for a fixed amount of time (5s for example) and collect the data including distances read from the front sensor and PWM output from Artemis, and send the data back with timestamps to computer via BLE, so that I can plot the data to have a look. </p>
+                        
+                        <p> In practical, I design my debug systems as follows: </p> 
+                        
+                        <p>1. Computer: a callback function <code>PID_debug</code> is defined to receive and store string messages sent from robot which contain timestamped front sensor readings and Motor input from Artemis (processed PWM duty cycle percentage).
+                        </p> 
+                        <p></p>
+                        <img src="lab6_imgs/callback function.png" style="width:100%">
+                        
+                        <p> 2. Computer -> Robot: after connecting Artemis with laptop, a defined function <code>PID_control</code> on Artemis side is called with parameter (Kp, Ki, Kd) setting of PID control from computer side via bluetooth to start the PID control task (position control task). It needs to be noticed that to avoid exceeding storage space of Artemis while preventing significant delay during the task, I decide to create three int arrays in Artemis side to store timestamps, distance readings from front ToF sensor and PWM duty cycle percentage processed by real time PID control. After the task is finished, the data in the arrays are then transmitted to computer side using a for loop, where each loop only one data from each array are extracted into a string and transmitted so that to prevent transmission memory overflow.    
+                        </p>
+
+                        <p></p>
+                        <script src="https://gist.github.com/zt88/863a050a0c1c09fe8361cf80347097e7.js"></script>
+                            
+                        <p> As the snippet shows, this function just receive set values of Kp, Ki and Kd from computer side and initialize several variables which all should be global variables, most importantly, this function sets the boolean value <code>PID_run</code> to true, which acts as a flag, so that the real PID control in the <code>void loop</code> can start to work.</p>
+
+                        
+                        <p> After the task is finished (when distance sensor reading is 304 mm, the robot stops moving), I can manually send stop command to trigger the <code>PID_run</code> flag to be false to stop PID control, followed with a <code>stop()</code> function to set motors stop spinning. </p>
+                         <p></p>
+                        <script src="https://gist.github.com/zt88/bea0137be66fd3469a953e96193b2dbd.js"></script>
+                            
+                        <p> 3. Robot -> Computer: Then I can call the function <code>send_PID_data</code> to send timestamps, distance readings and PWM duty cyce percentage stored in the arrays to the computer side. Since I initilaize the array with 1000 elements, but it is likely that the task finishes before the array is fully occupied, therefore I added an <code>if</code> condition there to prevent sending initialized 0s in the array.</p>
+                        
+                        <p></p>
+                        
+                        <script src="https://gist.github.com/zt88/1c946e8b7359807241ad57ef5aea14ea.js"></script>
+                        
+                        <p></p>
+                        
+                        <p> 4. Computer: all the digit messages from the data are extracted and stored into lists containing timestamps, front sensor distances readings and PWM duty cycle percentage correspondingly.</p>
+                        
+                        <p> 5. Computer: eventually, the time v.s. distance and time v.s. PWM duty cycle percentage can be plotted. </p>
+                        
+       
+                        
+                        <p></p>
+                        <p></p>
+                        <h1> Lab Task: Position Control </h1> 
+
+                        <h2 class="section-heading">PID Parameter Discussion</h2>
+                        <p> In this task, the error of my PID control system is defined as the difference between measured distance from front sensor and the targeted stop distance which is 304 mm. Since I am adjusting my PWM signal based on duty cycle percentage (<code>0% ~ 100%</code>) instead of <code>0 ~ 255</code>, after conducting several times of testing, I define my PID control parameters as Kp = 0.05, Ki = 0.0001, Kd = 0. </p>
+                        <p> </p>
+                        <script src="https://gist.github.com/zt88/0eb9232b7b27bd7bb89cc185b6be0194.js"></script>
+                        
+                        <p></p>
+                        <p> According to the experiments from previous labs, the robot will not move if PWM duty cycle is less than 25%, therefore a duty cycle percentage limit function is defined to ensure a reasonable value to be set for PWM. If the duty cycle percentage computed by PID is greater than 100, it will be set as 100 meaning full duty cycle of PWM. If it is computed less than 25, it will be set as 25 to keep robot moving. </p>
+                        
+                        <p> I code some helper functions to help control the motor more efficiently. </p>
+                        <p> </p>
+                        <script src="https://gist.github.com/zt88/3b8f59ed3b84603fdfad41927133a69d.js"></script>
+                        
+                        
+                        <p></p>
+                        <h2 class="section-heading">Range & Sampling time Discussion</h2>
+                        <p> Based on the tests from previous labs, we have known that the sampling frequency of ToF sensor is around 20 Hz. During the tests of PID control, an interesting phenomenon is found that because of inertance and sampling frequency limitation, the vehicle may pass the 304 mm targeted stop distance. Therefore, a condition is added to ensure that if the distance reading is less than 304 mm, in which case the error becomes negative, the PID controller computed PWM duty cycle percentage value is reversed and allocated to backward function to make the robot move backward, hence looping around the stop line until the robot stops exactly when distance reading is 304 mm. </p>
+                        
+                        
+                        <p> Another problem is that, since I am implementing short distance mode on the ToF sensor because of its better ambient disturbance immunity, the effective sensor reading range is upto around 1.4 meters and if the distance we are trying to measure is longer, the sensor reading just becomes zero. However, we may start the robot even further away from the wall, which leads to limitation of the sensor reading. To address the problem, while consiering effectiveness of PID control implementation, I eventually adjust the distance mode of front distance sensor to <code>Long</code>, so that we can get effective sensor readings away from the wall upto 4 meters. </p>
+                        
+                        
+                        
+                        
+                        <h2 class="section-heading">Position Control Demonstration</h2>
+                        <p> Video below demonstrates the robot successfully stops at around 304 mm away from the wall eventually. </p>
+                        
+                        <p></p>
+                        
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/1OEqv3JYsdo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        
+                        <p></p>
+                        <p> The distance sensor reading plot shows the distance between the robot and the wall during the task. </p>
+                        <p></p>
+                        <img src="lab6_imgs/distance.png" style="width:100%">
+                        
+                        <p></p>
+                        <p></p>
+                        <p> The time v.s. PWM duty cycle percentage plot is shown following. </p>
+                        <p></p>
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
+                        <p> The long time of 25 percent duty cycle is because the robot is close to the wall so that PID gives the lowest speed to robot, and when the robot is moving forward and backward to find the exact 304 mm reading, the PWM is always 25 percent. When it finally finds the 304 mm stop point, PID is stopped and PWM is set to 0. </p>
+
+                        
+                        
+                        <p></p>
+                        <p></p>
+                        <p></p>
+                        
+                        <h1> Additional Tasks </h1> 
+                        <h2 class="section-heading">Wind-up Implementation & Discussion </h2>
+                        <p> Wind-up protection is implemented to protect the integrator in the PID control from being too large to affect the PID permormance. Since the integrator part of PID is a mathematical operation that performs the integration of a function with respect to time, its value can accumulate to be quite large as time goes, which can affect the PID outcome significantly with a long time integration. Therefore, I set a saturation point for my integration part as shown below. </p>
+                        <p></p>
+                        <script src="https://gist.github.com/zt88/0d064c5aeee78f037c570233809819ab.js"></script>
+                         <p></p>
+                        
+                        <p> When error integration becomes greater than or equal to 10000, it equals to 10000 constantly. As my Ki is 0.0001, it only contributes 1 percent to my PWM duty cycle percentage, hence to avoid negative impact on PID output. </p>
+                        
+
+                        
+                        <p></p>
+                        <p>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/zt88/Fast-Robots">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Fast Robots 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
