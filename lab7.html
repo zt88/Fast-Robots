@@ -58,59 +58,81 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         
-                        <p> The purpose of this lab is to get experience with PID control: I am going to implement PID control in my robot to finish the position control task. Basically the idea of this task is to have my robot drive as fast as possible towards the wall and stop when it is exactly 1 foot (304 mm) away from the wall using feedback from the ToF distance sensor. The PID controller in this task will be controlling the speed of my robot by considering the distance between my robot and the wall. </p>
+                        <p> The objective of Lab 7 is to implement a Kalman Filter, which can help to execute PID control faster. The Kalman Filter can supplement the slowly sampled ToF values, so that the robot can speed towards the wall as fast as possible. This report describes how I decide the parameters for the Kalman filter and after that, I implemented it with the PID data collected from lab 6 to verify its performance.</p>
                         <p> </p>
                         
                         
                         <p></p>
-                        <h1> Prelab </h1> 
-                        <h2 class="section-heading">BLE Debug System</h2>
-                        <p> Before applying the PID controller to my robot, since the robot needs to be placed on the ground to conduct testing, there will not be any cable available to connect the robot to my computer so that to use <code>Serial.print</code> to print out distance sensor readings and any other information for debug usage. Therefore, it is essential to design a system that helps to debug my implementation by plotting out the distance output by front ToF sensor and the PWM output controlled by my PID controller, so that I can adjust PID controller parameters effectively. </p>
+                        <h1> Lab Tasks </h1> 
                         
-                        <p> A good techinique is to send commands to my robot over bluetooth, executing designed PID control for a fixed amount of time (5s for example) and collect the data including distances read from the front sensor and PWM output from Artemis, and send the data back with timestamps to computer via BLE, so that I can plot the data to have a look. </p>
                         
-                        <p> In practical, I design my debug systems as follows: </p> 
-                        
-                        <p>1. Computer: a callback function <code>PID_debug</code> is defined to receive and store string messages sent from robot which contain timestamped front sensor readings and Motor input from Artemis (processed PWM duty cycle percentage).
-                        </p> 
                         <p></p>
-                        <img src="lab6_imgs/callback function.png" style="width:100%">
-                        
-                        <p> 2. Computer -> Robot: after connecting Artemis with laptop, a defined function <code>PID_control</code> on Artemis side is called with parameter (Kp, Ki, Kd) setting of PID control from computer side via bluetooth to start the PID control task (position control task). It needs to be noticed that to avoid exceeding storage space of Artemis while preventing significant delay during the task, I decide to create three int arrays in Artemis side to store timestamps, distance readings from front ToF sensor and PWM duty cycle percentage processed by real time PID control. After the task is finished, the data in the arrays are then transmitted to computer side using a for loop, where each loop only one data from each array are extracted into a string and transmitted so that to prevent transmission memory overflow.    
-                        </p>
+                        <p></p>
 
-                        <p></p>
-                        <script src="https://gist.github.com/zt88/863a050a0c1c09fe8361cf80347097e7.js"></script>
-                            
-                        <p> As the snippet shows, this function just receive set values of Kp, Ki and Kd from computer side and initialize several variables which all should be global variables, most importantly, this function sets the boolean value <code>PID_run</code> to true, which acts as a flag, so that the real PID control in the <code>void loop</code> can start to work.</p>
-
-                        
-                        <p> After the task is finished (when distance sensor reading is 304 mm, the robot stops moving), I can manually send stop command to trigger the <code>PID_run</code> flag to be false to stop PID control, followed with a <code>stop()</code> function to set motors stop spinning. </p>
-                         <p></p>
-                        <script src="https://gist.github.com/zt88/bea0137be66fd3469a953e96193b2dbd.js"></script>
-                            
-                        <p> 3. Robot -> Computer: Then I can call the function <code>send_PID_data</code> to send timestamps, distance readings and PWM duty cyce percentage stored in the arrays to the computer side. Since I initilaize the array with 1000 elements, but it is likely that the task finishes before the array is fully occupied, therefore I added an <code>if</code> condition there to prevent sending initialized 0s in the array.</p>
-                        
-                        <p></p>
-                        
-                        <script src="https://gist.github.com/zt88/1c946e8b7359807241ad57ef5aea14ea.js"></script>
-                        
-                        <p></p>
-                        
-                        <p> 4. Computer: all the digit messages from the data are extracted and stored into lists containing timestamps, front sensor distances readings and PWM duty cycle percentage correspondingly.</p>
-                        
-                        <p> 5. Computer: eventually, the time v.s. distance and time v.s. PWM duty cycle percentage can be plotted. </p>
-                        
-       
-                        
-                        <p></p>
-                        <p></p>
-                        <h1> Lab Task: Position Control </h1> 
-
-                        <h2 class="section-heading">PID Parameter Discussion</h2>
-                        <p> In this task, the error of my PID control system is defined as the difference between measured distance from front sensor and the targeted stop distance which is 304 mm. Since I am adjusting my PWM signal based on duty cycle percentage (<code>0% ~ 100%</code>) instead of <code>0 ~ 255</code>, after conducting several times of testing, I define my PID control parameters as Kp = 0.05, Ki = 0.0001, Kd = 0. </p>
+                        <h2 class="section-heading">Estimate drag and momentum</h2>
+                        <p> Kirstin's <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-14-LocalPlanning_and_Maps.pdf" class="link-primary">lecture</a> gives detailed explanation on Kalman filter. To design a Kalman filter for my own robot, I need to build a state space model for the system by estimating the drag and momentum terms for the A and B matrices, as shown below</p>
+                        state space equation
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
                         <p> </p>
-                        <script src="https://gist.github.com/zt88/0eb9232b7b27bd7bb89cc185b6be0194.js"></script>
+                        
+                        <p> where d is drag term and m is momentum term.</p>
+                        <p> </p>
+                        drag and momentum
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
+                        <p> </p>
+                        
+                        <p>I get these values using step response, which is to drive the robot towards the wall, recording the data including PWM, distance sensor readings and timestamps during the process, try to get the robot run at a steady state for a while with maximum speed from PID control in lab 6, eventually brake the robot by reverse spinning for a short time to counteract to inertance hence to prevent the robot hits the wall.</p>
+                        
+                        <p> I start the step response measurement by placing my robot at around 1600 mm away from the wall and I delay it for 2 seconds before setting the PWM to be 50% duty cycle which is the highest PWM I obtained from my PID control in lab 6. Eventually, the robot will keep moving forward until the distance is less than 200 mm when robot brakes actively. With constant PWM signal, the steady state appears when the robot stops accelerating and run at a constant speed. During the whole process, the data are collected and stored in arrays, and are sent to computer side via bluetooth at the end. </p>
+                        
+                        <p> To conclude, the step response measurement process is: </p>
+                        
+                        <p>     1. 2 seconds of stationary state for robot, with "constant" distance reading of around 1600 mm and PWM duty cycle percentage of 0. </p>
+                        
+                        <p>     2. Moving forward until ToF reading is less than 200 mm during which the PWM value is 50%. </p>
+                        
+                        <p>     3. Brake actively and stop for 1 second during which the distance reading is "constant" and PWM value drops back to 0. </p>
+                        
+                        <p> The distance measurement is plotted as below, which shows the distance between robot and wall during the whole step response measurement process. </p>
+                        
+                        <p> </p>
+                        step_response_dist
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
+                        <p> </p>
+                        
+                        <p> Similarly, the PWM duty cycle percentage is shown below. </p>
+                        
+                        <p> </p>
+                        step_response_PWM
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
+                        <p> </p>
+                        
+                        <p> Then, according to the distance measurements and timestamps, the velocity can be computed and plotted as below. </p>
+                        
+                        <p> </p>
+                        velocity
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
+                        <p> </p>
+                        
+                        <p> Since the robot starts to move after two seconds, the velocity shown before 2 seconds are actually results from the distance measurement errors when robot is stationary. So we are interested in the velocity after 2 seconds, where the velocity continues increasing and keeps constant for a short period at around 1.6 m/s before the robot stops. By processing the velocity data in python, I can get the steady state velocity to be 1564 mm/s and the 90% rise time to be 1.516s. </p>
+                        
+                        <p> Therefore, based on the step response data I obtain, I can compute drag and momentum terms based on the fomula before as: </p>
+                        
+                        <p> </p>
+                        drag & momentum
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
+                        <p> </p>
+                        
+                        <p> Now, I have my A and B matrices to be: </p>
+                        
+                        <p> </p>
+                        A&B matrices
+                        <img src="lab6_imgs/PWM.png" style="width:100%">
+                        <p> </p>
+                        
+                        
+                        
+                        
                         
                         <p></p>
                         <p> According to the experiments from previous labs, the robot will not move if PWM duty cycle is less than 25%, therefore a duty cycle percentage limit function is defined to ensure a reasonable value to be set for PWM. If the duty cycle percentage computed by PID is greater than 100, it will be set as 100 meaning full duty cycle of PWM. If it is computed less than 25, it will be set as 25 to keep robot moving. </p>
