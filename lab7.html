@@ -72,15 +72,15 @@
                         <h2 class="section-heading">Estimate drag and momentum</h2>
                         <p> Kirstin's <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-14-LocalPlanning_and_Maps.pdf" class="link-primary">lecture</a> gives detailed explanation on Kalman filter. To design a Kalman filter for my own robot, I need to build a state space model for the system by estimating the drag and momentum terms for the A and B matrices, as shown below</p>
 
-                        <img src="lab7_imgs/state_space_equation.png" style="width:100%">
-                                                state space equation
+                        <img src="lab7_imgs/state_space_equation.png" style="width:70%">
+                        <span class="caption text-muted">State Space Equation</span>
                         <p> </p>
                         
                         <p> where d is drag term and m is momentum term.</p>
                         <p> </p>
 
-                        <img src="lab7_imgs/drag_momentum.png" style="width:100%">
-                                                drag and momentum
+                        <img src="lab7_imgs/drag_momentum.png" style="width:80%">
+                        <span class="caption text-muted">Drag & Momentum</span>
                         <p> </p>
                         
                         <p>I get these values using step response, which is to drive the robot towards the wall, recording the data including PWM, distance sensor readings and timestamps during the process, try to get the robot run at a steady state for a while with maximum speed from PID control in lab 6, eventually brake the robot by reverse spinning for a short time to counteract to inertance hence to prevent the robot hits the wall.</p>
@@ -99,24 +99,24 @@
                         
                         <p> </p>
 
-                        <img src="lab7_imgs/step_response_front_dist.png" style="width:100%">
-                                                step_response_dist
+                        <img src="lab7_imgs/step_response_front_dist.png" style="width:90%">
+                                                <span class="caption text-muted">Step Response Distance</span>
                         <p> </p>
                         
                         <p> Similarly, the PWM duty cycle percentage is shown below. </p>
                         
                         <p> </p>
 
-                        <img src="lab7_imgs/PWM.png" style="width:100%">
-                                                step_response_PWM
+                        <img src="lab7_imgs/PWM.png" style="width:90%">
+                                                <span class="caption text-muted">PWM duty-cycle Percentage</span>
                         <p> </p>
                         
                         <p> Then, according to the distance measurements and timestamps, the velocity can be computed and plotted as below. </p>
                         
                         <p> </p>
 
-                        <img src="lab7_imgs/velocity.png" style="width:100%">
-                                                velocity
+                        <img src="lab7_imgs/velocity.png" style="width:90%">
+                                                <span class="caption text-muted">Velocity</span>
                         <p> </p>
                         
                         <p> Since the robot starts to move after two seconds, the velocity shown before 2 seconds are actually results from the distance measurement errors when robot is stationary. So we are interested in the velocity after 2 seconds, where the velocity continues increasing and keeps constant for a short period at around 1.6 m/s before the robot stops. By processing the velocity data in python, I can get the steady state velocity to be 1564 mm/s and the 90% rise time to be 1.516s. </p>
@@ -124,7 +124,7 @@
                         <p> </p>
 
                         <img src="lab7_imgs/velocity_processing.png" style="width:100%">
-                                                extract steady speed and rise time
+                                                <span class="caption text-muted">Extract Velocity & 90 percent Rise Time</span>
                         <p> </p>
                         
                         <p> Therefore, based on the step response data I obtain, I can compute drag and momentum terms based on the fomula before as: </p>
@@ -132,15 +132,15 @@
                         <p> </p>
 
                         <img src="lab7_imgs/drag&momentum.png" style="width:100%">
-                                                drag & momentum
+                                                <span class="caption text-muted">Drag & Momentum Computation</span>
                         <p> </p>
                         
                         <p> Now, I have my A and B matrices to be: </p>
                         
                         <p> </p>
 
-                        <img src="lab7_imgs/matrices.png" style="width:100%">
-                                                A&B matrices
+                        <img src="lab7_imgs/matrices.png" style="width:80%">
+                                                <span class="caption text-muted">A & B Matrices</span>
                         <p> </p>
                         
                         
@@ -148,16 +148,56 @@
                         
                       
                         <h2 class="section-heading">Kalman Filter Initialization</h2>
-                        <p> Video below demonstrates the robot successfully stops at around 304 mm away from the wall eventually. </p>
+                        <p> After determining A and B matrices by step response measurement, with given C matrix which is <code>C = [-1 0]</code> (meaning that I am interested in the negative distance from the wall by setting the wall state to be 0 and the distance away from the wall is negative value) from lecture, I need to further decide filter parameters including process noise and measurement noise. </p>
                         
-                        
-                        <p> The distance sensor reading plot shows the distance between the robot and the wall during the task. </p>
-                        
-                        <p></p>
-                        <img src="lab6_imgs/distance.png" style="width:100%">
-                        
+                         <p></p>
+                        <img src="lab7_imgs/c_matrix.png" style="width:70%">
+                        <span class="caption text-muted">C Matrix</span>
                         <p></p>
                         
+                        
+                        <p> To specify process noise and measurement noise, according to the formula from lecture, I need three covariance values, among which two for the process noise and one for the measurement noise: </p>
+                        
+                        <p></p>
+                        <img src="lab7_imgs/noise.png" style="width:100%">
+                        <span class="caption text-muted">Process Noise & Measurement Noise</span>
+                        <p></p>
+                        
+                        
+                        <p> Since the process noise is dependent on ToF sensor sample rate, I find my sampling rate which is <bold>0.03s</bold> by computing difference between two consecutive timestamps. As I am using short distance mode of ToF sensor, the sampling rate is fast, while for long distace mode, the sampling rate can be slower.</p>
+                        <p></p>
+                        <img src="lab7_imgs/sample_rate.png" style="width:80%">
+                        <span class="caption text-muted">Sample Rate of ToF Sensor</span>
+                        <p></p>
+                        
+                        <p> Therefore, I can have my process noise (related to robot position and speed) to be computed based on the equations below, where 0.03 is my sampling rate. </p>
+                        <p></p>
+                        <img src="lab7_imgs/process_noise.png" style="width:80%">
+                        <span class="caption text-muted">Measurement Noise</span>
+                        <p></p>
+                        
+                        <p> The measurement noise represents the standard deviation of each ToF sensor's distance measurement in mm. As suggested by Kirstin, it can be set as 20 mm, meaning that for each measurement, there is a likely error of 20 mm. Therefore, I have my measurement noise as:</p>
+   
+                        <p></p>
+                        <img src="lab7_imgs/measurement_noise.png" style="width:80%">
+                        <span class="caption text-muted">Measurement Noise</span>
+                        <p></p>
+                        
+                        
+                        <p> Then, I can discretize my A and B matrices based on my sampling rate and so that implement discretized matrices in the Kalman filter. </p>
+                        
+                        <p> Now, the parameters setup for Kalman filter is completed, and I can define my Kalman filter by replacing my computed parameters to the Kalman filter template definition provided by Kirstin. The final Kalman filter code snippet is given as below.</p>
+                        
+                        <p></p>
+                        <script src="https://gist.github.com/zt88/5115aa3a633ebfd7b6779c84739d9a5f.js"></script>
+                        <p></p>
+                        
+                        
+                        
+                        
+                        
+                        
+                        <h2 class="section-heading">Kalman Filter Implementation</h2>
                         <p></p>
                         <p> The time v.s. PWM duty cycle percentage plot is shown following. </p>
                         <p></p>
