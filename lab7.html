@@ -71,14 +71,16 @@
 
                         <h2 class="section-heading">Estimate drag and momentum</h2>
                         <p> Kirstin's <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-14-LocalPlanning_and_Maps.pdf" class="link-primary">lecture</a> gives detailed explanation on Kalman filter. To design a Kalman filter for my own robot, I need to build a state space model for the system by estimating the drag and momentum terms for the A and B matrices, as shown below</p>
-                        state space equation
-                        <img src="lab6_imgs/PWM.png" style="width:100%">
+
+                        <img src="lab7_imgs/state_space_equation.png" style="width:100%">
+                                                state space equation
                         <p> </p>
                         
                         <p> where d is drag term and m is momentum term.</p>
                         <p> </p>
-                        drag and momentum
-                        <img src="lab6_imgs/PWM.png" style="width:100%">
+
+                        <img src="lab7_imgs/drag_momentum.png" style="width:100%">
+                                                drag and momentum
                         <p> </p>
                         
                         <p>I get these values using step response, which is to drive the robot towards the wall, recording the data including PWM, distance sensor readings and timestamps during the process, try to get the robot run at a steady state for a while with maximum speed from PID control in lab 6, eventually brake the robot by reverse spinning for a short time to counteract to inertance hence to prevent the robot hits the wall.</p>
@@ -96,22 +98,25 @@
                         <p> The distance measurement is plotted as below, which shows the distance between robot and wall during the whole step response measurement process. </p>
                         
                         <p> </p>
-                        step_response_dist
-                        <img src="lab6_imgs/PWM.png" style="width:100%">
+
+                        <img src="lab7_imgs/step_response_front_dist.png" style="width:100%">
+                                                step_response_dist
                         <p> </p>
                         
                         <p> Similarly, the PWM duty cycle percentage is shown below. </p>
                         
                         <p> </p>
-                        step_response_PWM
-                        <img src="lab6_imgs/PWM.png" style="width:100%">
+
+                        <img src="lab7_imgs/PWM.png" style="width:100%">
+                                                step_response_PWM
                         <p> </p>
                         
                         <p> Then, according to the distance measurements and timestamps, the velocity can be computed and plotted as below. </p>
                         
                         <p> </p>
-                        velocity
-                        <img src="lab6_imgs/PWM.png" style="width:100%">
+
+                        <img src="lab7_imgs/velocity.png" style="width:100%">
+                                                velocity
                         <p> </p>
                         
                         <p> Since the robot starts to move after two seconds, the velocity shown before 2 seconds are actually results from the distance measurement errors when robot is stationary. So we are interested in the velocity after 2 seconds, where the velocity continues increasing and keeps constant for a short period at around 1.6 m/s before the robot stops. By processing the velocity data in python, I can get the steady state velocity to be 1564 mm/s and the 90% rise time to be 1.516s. </p>
@@ -119,15 +124,17 @@
                         <p> Therefore, based on the step response data I obtain, I can compute drag and momentum terms based on the fomula before as: </p>
                         
                         <p> </p>
-                        drag & momentum
-                        <img src="lab6_imgs/PWM.png" style="width:100%">
+
+                        <img src="lab7_imgs/drag&momentum.png" style="width:100%">
+                                                drag & momentum
                         <p> </p>
                         
                         <p> Now, I have my A and B matrices to be: </p>
                         
                         <p> </p>
-                        A&B matrices
-                        <img src="lab6_imgs/PWM.png" style="width:100%">
+
+                        <img src="lab7_imgs/matrices.png" style="width:100%">
+                                                A&B matrices
                         <p> </p>
                         
                         
