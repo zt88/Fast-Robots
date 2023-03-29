@@ -203,19 +203,35 @@
                         
                         <h2 class="section-heading">Kalman Filter Implementation</h2>
                         <p></p>
-                        <p> The time v.s. PWM duty cycle percentage plot is shown following. </p>
+                        <p> To test the performance of my Kalman filter, I am going to implement Kalman filter on the PID control data I obtained from lab 6. While before I load the lab 6 data, I need to specify the initial state of Kalman filter, which are: </p> 
+                        <p>1. The x matrix containing initial position (first distance reading from PID distance data) and starting velocity (which is 0 since the robot starts from stationary). </p>
+                        <p>2. The sig matrix representing the initial standard deviation for robot position and speed, which are both set to 5. 
+                        
+                        <p> Eventually, the PWM percentage data and distance sensor readings obtained by PID control from lab 6 are invoked, together with initial state matrices, as input of Kalman filter function. </p>
+                            
+                        
+                                                                       <p></p>
+                        <img src="lab7_imgs/filter_implementation.png" style="width:100%">
+                        <span class="caption text-muted">Kalman Filter Implementation</span>
                         <p></p>
-                        <img src="lab6_imgs/PWM.png" style="width:100%">
-                        <p> The long time of 25 percent duty cycle is because the robot is close to the wall so that PID gives the lowest speed to robot, and when the robot is moving forward and backward to find the exact 304 mm reading, the PWM is always 25 percent. When it finally finds the 304 mm stop point, PID is stopped and PWM is set to 0. </p>
-
+                        
+                        <p> The plot below demonstrates the result of Kalman filter state estimation on the data I obtained from lab 6. It shows a good fit with almost no error. </p>
+                        
+                                                                                               <p></p>
+                        <img src="lab7_imgs/filter_result.png" style="width:90%">
+                        <span class="caption text-muted">Kalman Filter Result</span>
+                        <p></p>
+                        
+                        <p> I also conduct tests on different measurement noise variance while keeping the process noise variance unchanged since it only depends on sampling rate. Following is an example of Kalman filter model with setting high measurement noise variance (sig_m = 100), meaning that now I am less focusing on the distance data obtained by ToF sensor since it has high measurement error. In this case, I would use Kalman filter estimation instead of sensor readings as the real distance between robot and wall. </p>
+                        
+                                                                                                <p></p>
+                        <img src="lab7_imgs/high_sig_measure.png" style="width:90%">
+                        <span class="caption text-muted">Kalman Filter Result with High Measurement Noise</span>
+                        <p></p>
                         
                         
-                        <p></p>
-                        <p></p>
-                        <p></p>
-                        
-                        <h1> Additional Tasks </h1> 
-                        <h2 class="section-heading">Wind-up Implementation & Discussion </h2>
+                        <br></br>
+                        <h2 class="section-heading">Kalman Filter on Robot</h2>
                         <p> Wind-up protection is implemented to protect the integrator in the PID control from being too large to affect the PID permormance. Since the integrator part of PID is a mathematical operation that performs the integration of a function with respect to time, its value can accumulate to be quite large as time goes, which can affect the PID outcome significantly with a long time integration. Therefore, I set a saturation point for my integration part as shown below. </p>
                         <p></p>
                         <script src="https://gist.github.com/zt88/0d064c5aeee78f037c570233809819ab.js"></script>
