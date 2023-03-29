@@ -146,38 +146,18 @@
                         
                         
                         
-                        
-                        <p></p>
-                        <p> According to the experiments from previous labs, the robot will not move if PWM duty cycle is less than 25%, therefore a duty cycle percentage limit function is defined to ensure a reasonable value to be set for PWM. If the duty cycle percentage computed by PID is greater than 100, it will be set as 100 meaning full duty cycle of PWM. If it is computed less than 25, it will be set as 25 to keep robot moving. </p>
-                        
-                        <p> I code some helper functions to help control the motor more efficiently. </p>
-                        <p> </p>
-                        <script src="https://gist.github.com/zt88/3b8f59ed3b84603fdfad41927133a69d.js"></script>
-                        
-                        
-                        <p></p>
-                        <h2 class="section-heading">Range & Sampling time Discussion</h2>
-                        <p> Based on the tests from previous labs, we have known that the sampling frequency of ToF sensor is around 20 Hz. During the tests of PID control, an interesting phenomenon is found that because of inertance and sampling frequency limitation, the vehicle may pass the 304 mm targeted stop distance. Therefore, a condition is added to ensure that if the distance reading is less than 304 mm, in which case the error becomes negative, the PID controller computed PWM duty cycle percentage value is reversed and allocated to backward function to make the robot move backward, hence looping around the stop line until the robot stops exactly when distance reading is 304 mm. </p>
-                        
-                        
-                        <p> Another problem is that, since I am implementing short distance mode on the ToF sensor because of its better ambient disturbance immunity, the effective sensor reading range is upto around 1.4 meters and if the distance we are trying to measure is longer, the sensor reading just becomes zero. However, we may start the robot even further away from the wall, which leads to limitation of the sensor reading. To address the problem, while consiering effectiveness of PID control implementation, I eventually adjust the distance mode of front distance sensor to <code>Long</code>, so that we can get effective sensor readings away from the wall upto 4 meters. </p>
-                        
-                        
-                        
-                        
-                        <h2 class="section-heading">Position Control Demonstration</h2>
+                      
+                        <h2 class="section-heading">Kalman Filter Initialization</h2>
                         <p> Video below demonstrates the robot successfully stops at around 304 mm away from the wall eventually. </p>
                         
-                        <p></p>
                         
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/1OEqv3JYsdo" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        
-                        <p></p>
                         <p> The distance sensor reading plot shows the distance between the robot and the wall during the task. </p>
+                        
                         <p></p>
                         <img src="lab6_imgs/distance.png" style="width:100%">
                         
                         <p></p>
+                        
                         <p></p>
                         <p> The time v.s. PWM duty cycle percentage plot is shown following. </p>
                         <p></p>
