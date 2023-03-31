@@ -146,7 +146,7 @@
                         
                         
                         
-                      
+                        <br></br>
                         <h2 class="section-heading">Kalman Filter Initialization</h2>
                         <p> After determining A and B matrices by step response measurement, with given C matrix which is <code>C = [-1 0]</code> (meaning that I am interested in the negative distance from the wall by setting the wall state to be 0 and the distance away from the wall is negative value) from lecture, I need to further decide filter parameters including process noise and measurement noise. </p>
                         
@@ -200,7 +200,7 @@
                         
                         
                         
-                        
+                        <br></br>
                         <h2 class="section-heading">Kalman Filter Implementation</h2>
                         <p></p>
                         <p> To test the performance of my Kalman filter, I am going to implement Kalman filter on the PID control data I obtained from lab 6. While before I load the lab 6 data, I need to specify the initial state of Kalman filter, which are: </p> 
@@ -232,15 +232,60 @@
                         
                         <br></br>
                         <h2 class="section-heading">Kalman Filter on Robot</h2>
-                        <p> Wind-up protection is implemented to protect the integrator in the PID control from being too large to affect the PID permormance. Since the integrator part of PID is a mathematical operation that performs the integration of a function with respect to time, its value can accumulate to be quite large as time goes, which can affect the PID outcome significantly with a long time integration. Therefore, I set a saturation point for my integration part as shown below. </p>
+                        <p> After verifying the parameters of my Kalman filter using PID data collected from lab 6 in Jupyter side, now it's time to implement on the robot by defining the Kalman filter on Artemis side. </p>
+            
+                        <p> Video below shows the working Kalman filter integrated with PID control on the robot. </p>
+            <p></p>
+            <iframe width="640" height="360" src="https://www.youtube.com/embed/M8RAoTT2G3M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <span class="caption text-muted">Kalman_Filter with PID Control</span>
+            <p></p>
+            
+                        <p> Similar to last task, the parameters for Kalman filter need to be defined first, while as I have confirmed that previous parameters are good enough, I am using completely same parameters on Artemis side. Below are the code snippets for parameters initilization and Kalman filter definition.</p>
+                        
                         <p></p>
-                        <script src="https://gist.github.com/zt88/0d064c5aeee78f037c570233809819ab.js"></script>
+                            <script src="https://gist.github.com/zt88/f0105fcedcdbc7c310b7ea550dbbadf7.js"></script>
                          <p></p>
+            
+                        <p> It needs to be noticed that the initial position state <code>x_val</code> matrix is defined without specifying real distance because the distance sensor has not been initialized when the global variables are defined here. The distance sensor is initialized in <code>void setup()</code> part and the <code>x_val</code> is initialized by the ToF sensor's distance reading when the PID control with Kalman filter is invoked.</p>
+                        <p> The following code snippets demonstrates the PID case function where the PID parameters and some Kalman filter parameters are initialized. </p>
+            
+                                                <p></p>
+                           <script src="https://gist.github.com/zt88/e6b5d00d12bfc96a5361ba2d288f22e9.js"></script>
+                         <p></p>
+                        <p> The initial state matrix <code>x_val</code> is set with the negative ToF distance reading to be initial position state and 0 to be initial robot speed. The initial position state is negative because in Kalman filter, the wall is set to be 0 and the distance between robot and wall is negative. Based on the distance, the first PWM duty cycle percentage can be computed and set to <code>pwm_val</code>. </p>
+                            
+                        <p> Then, the kalman filter predicted distance (<code>-x_val(0,0)</code> as the kalman filter predicted distance is negative) is considered as the real robot-towards-wall distance and subtract it to 304 mm to get the error repetitively as PID control continues. The code snippets for the PID control loop located in the <code>void loop</code> section is shown as below. </p>
                         
-                        <p> When error integration becomes greater than or equal to 10000, it equals to 10000 constantly. As my Ki is 0.0001, it only contributes 1 percent to my PWM duty cycle percentage, hence to avoid negative impact on PID output. </p>
+                        <p> </p>
+                        <script src="https://gist.github.com/zt88/9dbab3f852d444d129d0bf1d737b2f39.js"></script>
+                        <p></p>
                         
+                        <p> for each loop, the Kalman filter function is called to update the <code>x_val</code> matrix which containing predicted distance and that distance is used to calculate distance error. </p>
+                           
+            
+                        <p> Eventually, by applying PI(D) control with P = 0.04 and I = 0.0001: </p>
+                                    <p></p>
+                        <img src="lab7_imgs/PID.png" style="width:80%">
+                        <span class="caption text-muted">PI(D) Control</span>
+                        <p></p>
+            
+                        <p> The PWM dutycyle perentage controlled by PID control and the Kalman filter predicted distances are demonstrated in the plots below. </p>
+                        
+                                                            <p></p>
+                        <img src="lab7_imgs/kalman_robot_dist.png" style="width:80%">
+                        <span class="caption text-muted">Kalman Predicted Distances & Sensor Measured Distances</span>
+                        <p></p>
+            
+            
+                                                <p></p>
+                        <img src="lab7_imgs/kalman_robot_pwm.png" style="width:80%">
+                        <span class="caption text-muted">PWM Dutycycle Percentages</span>
+                        <p></p>
+            
+            
+                        <p> It can be seen that basically the Kalman filter predicted distances are quile close to the sensor measured distances. The PID control system hence gives reasonable control on the PWM dutycycle percentage as shown in plot above. Now, the Kalman Filter is successfully implemented on the robot, together with PID control.</p>
 
-                        
+                        <br></br>
                         <p></p>
                         <p>
                             Texts and Videos by
