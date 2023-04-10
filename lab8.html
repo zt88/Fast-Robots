@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
         <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
-        <title>Fast Robots: Lab 7</title>
+        <title>Fast Robots: Lab 8</title>
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
@@ -39,13 +39,13 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <div class="post-heading">
-                            <h1>Lab7:</h1>
-                            <h1> Kalman Filter </h1>
-                            <h2 class="subheading">Sensor Fusion</h2>
+                            <h1>Lab8:</h1>
+                            <h1> Stunt! </h1>
+                            <h2 class="subheading">Drive as fast as possible and perform a stunt when approaching the wall.</h2>
                             <span class="meta">
                                 Posted by
                                 <a href="about.html">Zhongqi Tao</a>
-                                on March 21, 2023
+                                on April 11, 2023
                             </span>
                         </div>
                     </div>
@@ -58,25 +58,70 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         
-                        <p> The objective of Lab 7 is to implement a Kalman Filter, which can help to execute PID control faster. The Kalman Filter can supplement the slowly sampled ToF values, so that the robot can speed towards the wall as fast as possible. This report describes how I decide the parameters for the Kalman filter and after that, I implemented it with the PID data collected from lab 6 to verify its performance.</p>
+                        <p> The objective of this lab is to combine what I have done from previous lab to fully implement a stunt on the robot as fast as possible.  </p>
                         <p> </p>
                         
                         
                         <p></p>
-                        <h1> Lab Tasks </h1> 
+                        <h1> Lab Task A: Position Control </h1> 
                         
                         
                         <p></p>
                         <p></p>
 
-                        <h2 class="section-heading">Estimate drag and momentum</h2>
-                        <p> Kirstin's <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-14-LocalPlanning_and_Maps.pdf" class="link-primary">lecture</a> gives detailed explanation on Kalman filter. To design a Kalman filter for my own robot, I need to build a state space model for the system by estimating the drag and momentum terms for the A and B matrices, as shown below</p>
+                        <p> Since I have chosen "Position Control" task in lab 7, in this lab, I will implement my stunt when the robot is approaching the wall. Basically the process of the stunt is: </p>
+                        
+                        <p>1. Start the robot away from the wall within 4m and hardcode to give its motors a fast enough speed to drive it towards the wall. The reason here to hardcode the PWM values for motors instead of applying PID position control to adjust PWM based on distance error is because the robot needs to go fast enough to do a flip, but PID position control will slow down the speed as the robot approaching the wall.</p>
+                        <p>2. When the distance between robot and the wall is around 0.5m, the robot motors will spin reversely with max PWM values (255) to perform a flip.</p> 
+                        <p>3. The robot will then drive back away from the wall in a fast speed. </p>
+                        
+                        <p> To ensure the robot motors can spin reversely in time to perform the flip regarding the high running speed while low distance sensor sampling rate, the Kalman filter developed before is used to predict the distance between robot and the wall and hence based on the faster updated distance prediction, the reverse spinning can happen on time to perform the flip. </p>
+                        
+                        
+                        <p> Starting from the line, the robot is coded to travel forward to the wall at a speed of ...% of PWM duty cycle and as the Kalman filter distance estimation gives a reading of 500 mm, the PWM duty cycle percentage is reversed to 100% to achieve a flip. Then the robot runs forward in the opssite direction with a high speed (...% PWM) for ... seconds and eventually stop after it crosses the starting line. The code snippet of this stunt process is given as below.</p>
+                        <p></p>
+                            <script src="https://gist.github.com/zt88/f0105fcedcdbc7c310b7ea550dbbadf7.js"></script>
+                        <p></p>
+                        
+                        <p> It needs to be noticed that .... :Kalman filter When you have new sensor readings, run both the prediction and the update step. When you don’t have new sensor readings, run only the prediction step (i.e. compute your estimated distance based only on the motor inputs and your dynamics model).  </p>
+                        
+                        
+                        
+                        
+                        
+                        <p> The distance data from ToF sensor and Kalman filter prediction when robot is driving towards the wall are shown in plot as below. DESCRIPTION </p>
+                        <p> </p>
 
-                        <img src="lab7_imgs/state_space_equation.png" style="width:70%">
-                        <span class="caption text-muted">State Space Equation</span>
+                        <img src="lab7_imgs/step_response_front_dist.png" style="width:90%">
+                                                <span class="caption text-muted">Distance Data from Sensor & Kalman filter</span>
                         <p> </p>
                         
-                        <p> where d is drag term and m is momentum term.</p>
+                        <p> The PWM duty cycle percentage during the whole process is plotted as below. DESCRIPTION</p>
+                        
+                        <p> </p>
+
+                        <img src="lab7_imgs/PWM.png" style="width:90%">
+                                                <span class="caption text-muted">PWM duty-cycle Percentage</span>
+                        <p> </p>
+                        
+                       
+                        <p> Video below demonstrates the stunt performed successfully by the robot. </p>
+                        <p></p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/M8RAoTT2G3M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Stunt Performed by Robot</span>
+                        <p></p>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <p> </p>
                         <p> </p>
 
                         <img src="lab7_imgs/drag_momentum.png" style="width:60%">
