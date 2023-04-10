@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
+        <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
+        <title>Fast Robots: Lab 7</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">ECE 5160 · Fast Robots</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me & Project</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Lab7:</h1>
+                            <h1> Kalman Filter </h1>
+                            <h2 class="subheading">Sensor Fusion</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="about.html">Zhongqi Tao</a>
+                                on March 21, 2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        
+                        <p> The objective of Lab 7 is to implement a Kalman Filter, which can help to execute PID control faster. The Kalman Filter can supplement the slowly sampled ToF values, so that the robot can speed towards the wall as fast as possible. This report describes how I decide the parameters for the Kalman filter and after that, I implemented it with the PID data collected from lab 6 to verify its performance.</p>
+                        <p> </p>
+                        
+                        
+                        <p></p>
+                        <h1> Lab Tasks </h1> 
+                        
+                        
+                        <p></p>
+                        <p></p>
+
+                        <h2 class="section-heading">Estimate drag and momentum</h2>
+                        <p> Kirstin's <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-14-LocalPlanning_and_Maps.pdf" class="link-primary">lecture</a> gives detailed explanation on Kalman filter. To design a Kalman filter for my own robot, I need to build a state space model for the system by estimating the drag and momentum terms for the A and B matrices, as shown below</p>
+
+                        <img src="lab7_imgs/state_space_equation.png" style="width:70%">
+                        <span class="caption text-muted">State Space Equation</span>
+                        <p> </p>
+                        
+                        <p> where d is drag term and m is momentum term.</p>
+                        <p> </p>
+
+                        <img src="lab7_imgs/drag_momentum.png" style="width:60%">
+                        <span class="caption text-muted">Drag & Momentum</span>
+                        <p> </p>
+                        
+                        <p>I get these values using step response, which is to drive the robot towards the wall, recording the data including PWM, distance sensor readings and timestamps during the process, try to get the robot run at a steady state for a while with maximum speed from PID control in lab 6, eventually brake the robot by reverse spinning for a short time to counteract to inertance hence to prevent the robot hits the wall.</p>
+                        
+                        <p> I start the step response measurement by placing my robot at around 1600 mm away from the wall and I delay it for 2 seconds before setting the PWM to be 50% duty cycle which is the highest PWM I obtained from my PID control in lab 6. Eventually, the robot will keep moving forward until the distance is less than 200 mm when robot brakes actively. With constant PWM signal, the steady state appears when the robot stops accelerating and run at a constant speed. During the whole process, the data are collected and stored in arrays, and are sent to computer side via bluetooth at the end. </p>
+                        
+                        <p> To conclude, the step response measurement process is: </p>
+                        
+                        <p>     1. 2 seconds of stationary state for robot, with "constant" distance reading of around 1600 mm and PWM duty cycle percentage of 0. </p>
+                        
+                        <p>     2. Moving forward until ToF reading is less than 200 mm during which the PWM value is 50%. </p>
+                        
+                        <p>     3. Brake actively and stop for 1 second during which the distance reading is "constant" and PWM value drops back to 0. </p>
+                        
+                        <p> The distance measurement is plotted as below, which shows the distance between robot and wall during the whole step response measurement process. </p>
+                        
+                        <p> </p>
+
+                        <img src="lab7_imgs/step_response_front_dist.png" style="width:90%">
+                                                <span class="caption text-muted">Step Response Distance</span>
+                        <p> </p>
+                        
+                        <p> Similarly, the PWM duty cycle percentage is shown below. </p>
+                        
+                        <p> </p>
+
+                        <img src="lab7_imgs/PWM.png" style="width:90%">
+                                                <span class="caption text-muted">PWM duty-cycle Percentage</span>
+                        <p> </p>
+                        
+                        <p> Then, according to the distance measurements and timestamps, the velocity can be computed and plotted as below. </p>
+                        
+                        <p> </p>
+
+                        <img src="lab7_imgs/velocity.png" style="width:90%">
+                                                <span class="caption text-muted">Velocity</span>
+                        <p> </p>
+                        
+                        <p> Since the robot starts to move after two seconds, the velocity shown before 2 seconds are actually results from the distance measurement errors when robot is stationary. So we are interested in the velocity after 2 seconds, where the velocity continues increasing and keeps constant for a short period at around 1.6 m/s before the robot stops. By processing the velocity data in python, I can get the steady state velocity to be 1564 mm/s and the 90% rise time to be 1.516s. </p>
+                        
+                        <p> </p>
+
+                        <img src="lab7_imgs/velocity_processing.png" style="width:100%">
+                                                <span class="caption text-muted">Extract Velocity & 90 percent Rise Time</span>
+                        <p> </p>
+                        
+                        <p> Therefore, based on the step response data I obtain, I can compute drag and momentum terms based on the fomula before as: </p>
+                        
+                        <p> </p>
+
+                        <img src="lab7_imgs/drag&momentum.png" style="width:100%">
+                                                <span class="caption text-muted">Drag & Momentum Computation</span>
+                        <p> </p>
+                        
+                        <p> Now, I have my A and B matrices to be: </p>
+                        
+                        <p> </p>
+
+                        <img src="lab7_imgs/matrices.png" style="width:60%">
+                                                <span class="caption text-muted">A & B Matrices</span>
+                        <p> </p>
+                        
+                        
+                        
+                        
+                        <br></br>
+                        <h2 class="section-heading">Kalman Filter Initialization</h2>
+                        <p> After determining A and B matrices by step response measurement, with given C matrix which is <code>C = [-1 0]</code> (meaning that I am interested in the negative distance from the wall by setting the wall state to be 0 and the distance away from the wall is negative value) from lecture, I need to further decide filter parameters including process noise and measurement noise. </p>
+                        
+                         <p></p>
+                        <img src="lab7_imgs/c_matrix.png" style="width:40%">
+                        <span class="caption text-muted">C Matrix</span>
+                        <p></p>
+                        
+                        
+                        <p> To specify process noise and measurement noise, according to the formula from lecture, I need three covariance values, among which two for the process noise and one for the measurement noise: </p>
+                        
+                        <p></p>
+                        <img src="lab7_imgs/noise.png" style="width:60%">
+                        <span class="caption text-muted">Process Noise & Measurement Noise</span>
+                        <p></p>
+                        
+                        
+                        <p> Since the process noise is dependent on ToF sensor sample rate, I find my sampling rate which is <bold>0.03s</bold> by computing difference between two consecutive timestamps. As I am using short distance mode of ToF sensor, the sampling rate is fast, while for long distace mode, the sampling rate can be slower.</p>
+                        <p></p>
+                        <img src="lab7_imgs/sample_rate.png" style="width:100%">
+                        <span class="caption text-muted">Sample Rate of ToF Sensor</span>
+                        <p></p>
+                        
+                        <p> Therefore, I can have my process noise (related to robot position and speed) to be computed based on the equations below, where 0.03 is my sampling rate. </p>
+                        <p></p>
+                        <img src="lab7_imgs/process_noise.png" style="width:75%">
+                        <span class="caption text-muted">Process Noise</span>
+                        <p></p>
+                        
+                        <p> The measurement noise represents the standard deviation of each ToF sensor's distance measurement in mm. As suggested by Kirstin, it can be set as 20 mm, meaning that for each measurement, there is a likely error of 20 mm. Therefore, I have my measurement noise as:</p>
+   
+                        <p></p>
+                        <img src="lab7_imgs/measurement_noise.png" style="width:60%">
+                        <span class="caption text-muted">Measurement Noise</span>
+                        <p></p>
+                        
+                        
+                        <p> Then, I can discretize my A and B matrices based on my sampling rate and so that implement discretized matrices in the Kalman filter. </p>
+                        
+                        <p> Now, the parameters setup for Kalman filter is completed, and I can define my Kalman filter by replacing my computed parameters to the Kalman filter template definition provided by Kirstin. The final Kalman filter code snippet is given as below.</p>
+                        
+                        <p></p>
+                        <img src="lab7_imgs/filter_setup.png" style="width:100%">
+                        <span class="caption text-muted">Kalman Filter Parameters Setup</span>
+                        <p></p>
+                        
+                                                <p></p>
+                        <img src="lab7_imgs/filter_define.png" style="width:100%">
+                        <span class="caption text-muted">Kalman Filter Definition</span>
+                        <p></p>
+                        
+                        
+                        
+                        <br></br>
+                        <h2 class="section-heading">Kalman Filter Implementation</h2>
+                        <p></p>
+                        <p> To test the performance of my Kalman filter, I am going to implement Kalman filter on the PID control data I obtained from lab 6. While before I load the lab 6 data, I need to specify the initial state of Kalman filter, which are: </p> 
+                        <p>1. The x matrix containing initial position (first distance reading from PID distance data) and starting velocity (which is 0 since the robot starts from stationary). </p>
+                        <p>2. The sig matrix representing the initial standard deviation for robot position and speed, which are both set to 5. 
+                        
+                        <p> Eventually, the PWM percentage data and distance sensor readings obtained by PID control from lab 6 are invoked, together with initial state matrices, as input of Kalman filter function. </p>
+                            
+                        
+                                                                       <p></p>
+                        <img src="lab7_imgs/filter_implementation.png" style="width:100%">
+                        <span class="caption text-muted">Kalman Filter Implementation</span>
+                        <p></p>
+                        
+                        <p> The plot below demonstrates the result of Kalman filter state estimation on the data I obtained from lab 6. It shows a good fit with almost no error. </p>
+                        
+                                                                                               <p></p>
+                        <img src="lab7_imgs/filter_result.png" style="width:90%">
+                        <span class="caption text-muted">Kalman Filter Result</span>
+                        <p></p>
+                        
+                        <p> I also conduct tests on different measurement noise variance while keeping the process noise variance unchanged since it only depends on sampling rate. Following is an example of Kalman filter model with setting high measurement noise variance (sig_m = 100), meaning that now I am less focusing on the distance data obtained by ToF sensor since it has high measurement error. In this case, I would use Kalman filter estimation instead of sensor readings as the real distance between robot and wall. </p>
+                        
+                                                                                                <p></p>
+                        <img src="lab7_imgs/high_sig_measure.png" style="width:90%">
+                        <span class="caption text-muted">Kalman Filter Result with High Measurement Noise</span>
+                        <p></p>
+                        
+                        
+                        <br></br>
+                        <h2 class="section-heading">Kalman Filter on Robot</h2>
+                        <p> After verifying the parameters of my Kalman filter using PID data collected from lab 6 in Jupyter side, now it's time to implement on the robot by defining the Kalman filter on Artemis side. </p>
+            
+                        <p> Video below shows the working Kalman filter integrated with PID control on the robot. </p>
+            <p></p>
+            <iframe width="640" height="360" src="https://www.youtube.com/embed/M8RAoTT2G3M" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            <span class="caption text-muted">Kalman_Filter with PID Control</span>
+            <p></p>
+            
+                        <p> Similar to last task, the parameters for Kalman filter need to be defined first, while as I have confirmed that previous parameters are good enough, I am using completely same parameters on Artemis side. Below are the code snippets for parameters initilization and Kalman filter definition.</p>
+                        
+                        <p></p>
+                            <script src="https://gist.github.com/zt88/f0105fcedcdbc7c310b7ea550dbbadf7.js"></script>
+                         <p></p>
+            
+                        <p> It needs to be noticed that the initial position state <code>x_val</code> matrix is defined without specifying real distance because the distance sensor has not been initialized when the global variables are defined here. The distance sensor is initialized in <code>void setup()</code> part and the <code>x_val</code> is initialized by the ToF sensor's distance reading when the PID control with Kalman filter is invoked.</p>
+                        <p> The following code snippets demonstrates the PID case function where the PID parameters and some Kalman filter parameters are initialized. </p>
+            
+                                                <p></p>
+                           <script src="https://gist.github.com/zt88/e6b5d00d12bfc96a5361ba2d288f22e9.js"></script>
+                         <p></p>
+                        <p> The initial state matrix <code>x_val</code> is set with the negative ToF distance reading to be initial position state and 0 to be initial robot speed. The initial position state is negative because in Kalman filter, the wall is set to be 0 and the distance between robot and wall is negative. Based on the distance, the first PWM duty cycle percentage can be computed and set to <code>pwm_val</code>. </p>
+                            
+                        <p> Then, the kalman filter predicted distance (<code>-x_val(0,0)</code> as the kalman filter predicted distance is negative) is considered as the real robot-towards-wall distance and subtract it to 304 mm to get the error repetitively as PID control continues. The code snippets for the PID control loop located in the <code>void loop</code> section is shown as below. </p>
+                        
+                        <p> </p>
+                        <script src="https://gist.github.com/zt88/9dbab3f852d444d129d0bf1d737b2f39.js"></script>
+                        <p></p>
+                        
+                        <p> for each loop, the Kalman filter function is called to update the <code>x_val</code> matrix which containing predicted distance and that distance is used to calculate distance error. </p>
+                           
+            
+                        <p> Eventually, by applying PI(D) control with P = 0.04 and I = 0.0001: </p>
+                                    <p></p>
+                        <img src="lab7_imgs/PID.png" style="width:90%">
+                        <span class="caption text-muted">PI(D) Control</span>
+                        <p></p>
+            
+                        <p> The PWM dutycyle perentage controlled by PID control and the Kalman filter predicted distances are demonstrated in the plots below. </p>
+                        
+                                                            <p></p>
+                        <img src="lab7_imgs/kalman_robot_dist.png" style="width:100%">
+                        <span class="caption text-muted">Kalman Predicted Distances & Sensor Measured Distances</span>
+                        <p></p>
+            
+            
+                                                <p></p>
+                        <img src="lab7_imgs/kalman_robot_pwm.png" style="width:100%">
+                        <span class="caption text-muted">PWM Dutycycle Percentages</span>
+                        <p></p>
+            
+            
+                        <p> It can be seen that basically the Kalman filter predicted distances are quile close to the sensor measured distances. The PID control system hence gives reasonable control on the PWM dutycycle percentage as shown in plot above. Now, the Kalman Filter is successfully implemented on the robot, together with PID control.</p>
+
+                        <br></br>
+                        <p></p>
+                        <p>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/zt88/Fast-Robots">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Fast Robots 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
