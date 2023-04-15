@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="Github web page for ECE 5160: Fast Robots (2023SP)." />
+        <meta name="author" content="Zhongqi Tao (zt88@cornell.edu)" />
+        <title>Fast Robots: Lab 8</title>
+        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <!-- Font Awesome icons (free version)-->
+        <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="css/styles.css" rel="stylesheet" />
+    </head>
+    <body>
+        <!-- Navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+            <div class="container px-4 px-lg-5">
+                <a class="navbar-brand" href="index.html">ECE 5160 · Fast Robots</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="index.html">Home</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="about.html">About Me & Project</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page Header-->
+        <header class="masthead" style="background-image: url('assets/img/post-bg.jpg')">
+            <div class="container position-relative px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <div class="post-heading">
+                            <h1>Lab8:</h1>
+                            <h1> Stunt! </h1>
+                            <h2 class="subheading">Drive as fast as possible and perform a stunt when approaching the wall.</h2>
+                            <span class="meta">
+                                Posted by
+                                <a href="about.html">Zhongqi Tao</a>
+                                on April 11, 2023
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- Post Content-->
+        <article class="mb-4">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        
+                        <p> The objective of this lab is to combine what I have done from previous lab to fully implement a stunt on the robot as fast as possible.  </p>
+                        <p> </p>
+                        
+                        
+                        <p></p>
+                        <h1> Lab Task A: Position Control </h1> 
+                        
+                        
+                        <p></p>
+                        <p></p>
+
+                        <p> Since I have chosen "Position Control" task in lab 7, in this lab, I will implement my stunt when the robot is approaching the wall. Basically the process of the stunt is: </p>
+                        
+                        <p>1. Start the robot away from the wall within 4m and hardcode to give its motors a fast enough speed to drive it towards the wall. The reason here to hardcode the PWM values for motors instead of applying PID position control to adjust PWM based on distance error is because the robot needs to go fast enough to do a flip, but PID position control will slow down the speed as the robot approaching the wall.</p>
+                        <p>2. When the distance between robot and the wall is around 0.5m, the robot motors will spin reversely with max PWM values (255) to perform a flip.</p> 
+                        <p>3. The robot will then drive back away from the wall in a fast speed. </p>
+                        
+                        <p> To ensure the robot motors can spin reversely in time to perform the flip regarding the high running speed while low distance sensor sampling rate, the Kalman filter developed before is used to predict the distance between robot and the wall and hence based on the faster updated distance prediction, the reverse spinning can happen on time to perform the flip. </p>
+                        
+                        
+                        <p> Starting from the line, the robot is coded to travel forward to the wall at a speed of 90% of PWM duty cycle and as the Kalman filter distance estimation gives a reading of 500 mm, the PWM duty cycle percentage is reversed to 100% to try to achieve a flip. The code snippet of this stunt process is given as below, where the initial distance for Kalman filter is initialized to be <code>x_val = {-4000, 0};</code>, the forward speed is 90% PWM duty cycle. </p>
+                        <p></p>
+                            <script src="https://gist.github.com/zt88/aa4807c751d55c6ccebeaf94205ee465.js"></script>
+                            <span class="caption text-muted">Case Function for Stunt</span>
+                        <p></p>
+                        
+                        <p> It needs to be noticed that when the new distance measurement from ToF sensor is ready, the Kalman filter will run both prediction and update parts, otherwise the Kalman filte only runs prediction part based on the most recent previously measured distance from ToF sensor. Hence in this way, not only Kalman filter can help complement ToF low sampling rate by making prediction, the ToF sensor measurement reflecting real time distance between robot and the wall can also help rectify the Kalman filter prediction by calling update step. </p>
+                        
+                        <p> The <code>stunt_kf</code> function is used to define Kalman filter which takes sampling rate (I set it to 0.002 s which is about the running speed of the while loop in the case above that calls this function to get new Kalman filter output) and a defined struct <code>sensor_result</code> which contains int type measured distance and a boolean indicating if new sensor measurement is ready. The code snippets for <code>stunt_kf()</code> and <code>sensors.get_front_dist()</code> are shown as below. </p>
+                        <p></p>
+                        <script src="https://gist.github.com/zt88/d123a33c88ed4ab444fe9e4b4db393ff.js"></script>
+                        <span class="caption text-muted">ToF Sensor Function</span>
+                        <p></p>
+                        
+                        
+                        <p></p>
+                        <script src="https://gist.github.com/zt88/d2fe06c0a0a47be5e4030e8684d7c08c.js"></script>
+                        <span class="caption text-muted">ToF Sensor Function</span>
+                        <p></p>
+                        
+                        
+                        <p> The video below shows how implementation of Kalman Filter improves the running speed of robot effectively. According to the video shows, the robot is set to stop when approaching the wall (< 500 mm), but because of inertance the robot stills move forward. </p>
+                                                                            <p></p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/kceW1wQ4JYc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Kalman Filter Implementation</span>
+                        <p></p>
+                        
+                        
+                        <p> The distance data from ToF sensor when robot is driving towards the wall are shown in plot as below. Since the ToF sensor is using long distance mode, the sampling rate is around 60 ms, therefore, it still plots the most recent measurement if the new measurement is not ready. </p>
+                        
+                        <p> </p>
+
+                        <img src="lab8_imgs/ToF_dist.png" style="width:90%">
+                                                <span class="caption text-muted">Distance Data from ToF Sensor</span>
+                        <p> </p>
+                        
+                        <p> The distance data predicted by Kalman Filter is plotted as below. It can be seen the Kalman filter prediction plot is much smoother than ToF sensor measurement with almost no repeating values. </p>
+                        <p> </p>
+
+                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
+                                                <span class="caption text-muted">Distance Data from Kalman Filter Prediction</span>
+                        <p> </p>
+                        
+                        <p> The PWM duty cycle percentage during the forward process is plotted as below. The PWM is 90% contantly until the Kalman Filter predicted distance between robot and the wall is less than 500 mm, when the motors start to spin reversely. </p>
+                        
+                        <p> </p>
+
+                        <img src="lab8_imgs/PWM.png" style="width:90%">
+                                                <span class="caption text-muted">PWM duty-cycle Percentage</span>
+                        <p> </p>
+                        
+                       
+                        <p> However, unfortunately, after several times of tests, I still cannot achieve flip even with hardcoded maximum spinning speed (255) running forward and backward. The robot just turn in circles at the moment the motors spin reversely from foward spinning. I think the reason that it cannot flip is because that I put too many components on the one side of the robot, making its center of gravity stays on that side instead of center. Also, it is possible that because of some hardware issues such as different motor spinning speed can result the difficulty to make a flip. </p>
+                        <p> A failure flip attempt video is shown as below. </p>
+                        <p></p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/xlbFBH7WX5g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Flip Attempt but Failed T T</span>
+                        <p></p>
+                        
+                        <p> In this case, I  borrowed my teammate's robot and implement the Kalman Filter to make the robot run in a high speed and try the stunt. Luckily, the robot does flips successfully!!! Below are videos showing the flips. </p>
+                        
+                        <p></p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/eUlWy_aahkM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Flip Attempt 1 </span>
+                        <p></p>
+                        
+                        
+                                                <p></p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/JSBmaBEQzF4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Flip Attempt 2 </span>
+                        <p></p>
+                        
+                                                <p></p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/6FXREd0KHmY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Flip Attempt 3 </span>
+                        <p></p>
+                        
+                        
+                        <br></br>
+                        <p></p>
+                        <p>
+                            Texts and Videos by
+                            <a href="about.html">Zhongqi Tao</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <!-- Footer-->
+        <footer class="border-top">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-md-10 col-lg-8 col-xl-7">
+                        <ul class="list-inline text-center">
+                            <li class="list-inline-item">
+                                <a href="https://github.com/zt88/Fast-Robots">
+                                    <span class="fa-stack fa-lg">
+                                        <i class="fas fa-circle fa-stack-2x"></i>
+                                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="small text-center text-muted fst-italic">Copyright &copy; Fast Robots 2023</div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
