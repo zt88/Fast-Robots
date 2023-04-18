@@ -81,23 +81,23 @@
                         <p> Since I am running short of time, I decide to implement open loop control to make my robot spin around on the spots to record ToF sensor readings. After conducting several tests of the spinning on a spot in the area, my open loop control program is designed as below. </p>
                         <p></p>
                             <script src="https://gist.github.com/zt88/89d682ef68dd3b4079e8f4559e86b45c.js"></script>
-                            <span class="caption text-muted">Open Loop Control </span>
+                            <span class="caption text-muted">Open Loop Control</span>
                         <p></p>
                         
-                        <p> I decide to collect 23 points during the 360 degree spinning, which means approximately 15.65 degrees per point, with this relatively high resolution, hopefully the points-based map can be accurate enough. </p>
+                        <p> I decide to collect 23 points during the 360 degree spinning, which means approximately 15.65 degrees per point, with this relatively high resolution, hopefully the point-based map can be accurate enough. </p>
                         <p> The video below shows the open loop control implemented on my robot to make it spin on the spot 3 (5, 3) collecting distance readings. </p>
                         <p></p>
                         <iframe width="640" height="360" src="https://www.youtube.com/embed/LRFBwuuiE78" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Open Loop Control</span>
                         <p></p>
                         
-                        <p> This open loop control is repeated on the five spots within the area. Below is the plot for the implementation of open loop control on the spot 3 where the distance data is plotted in a polar graph so that the measured distances from different directions are more intuitively demonstrated. </p>
+                        <p> This open loop control is repeated on the five spots within the area. Below is an example plot for the implementation of open loop control on the spot 3 where the distance data is plotted in a time domain graph. </p>
                         
                         <p> </p>
                         <p> </p>
 
-                        <img src="lab9_imgs/spot3.png" style="width:90%">
-                                                <span class="caption text-muted">Distance Data in Polar Plot</span>
+                        <img src="lab9_imgs/DistancevsTime.png" style="width:90%">
+                                                <span class="caption text-muted">Distance Data in Time Domain</span>
                         <p> </p>
                         
                         <p> The PWM duty cycle percentage during the spinning process is always 80%. My robot spins 100 ms using this PWM for approximately 15.65 degrees. </p>
@@ -106,7 +106,7 @@
                         
                         
                         <h2> Read out Distances </h2> 
-                        <p> Since there are four marked spots within the area, I execute my turn at each of them and get the measured distances. For each spot, I conduct the turn for twice with robot placed in the same orientation to verify the precision of collected distances. It needs to be noticed that since I place my robot vertically towards the upper boundary of the area with my robot head facing forward, and my open loop control makes the robot spin clockwise, while the polar graph plots the degree increasing counter-clockwise. To fit the distance measurements with polar plot degrees properly, I conduct some transformation to change the corresponding theta angle (in radian) with respect to each distance measurements. The code snippet for the theta transformation is given as below. Eventually, the polar distance plots for the four spots are shown below, which match the real area measurement situation correctly. </p>
+                        <p> To make it more intuitively to visualize the distances measured from a spot, the time domain distance plots are converted to polar plots. Since there are four marked spots within the area, I execute my turn at each of them and get the measured distances. For each spot, I conduct the turn for twice with robot placed in the same orientation to verify the precision of collected distances. It needs to be noticed that since I place my robot vertically towards the upper boundary of the area with my robot head facing forward, and my open loop control makes the robot spin clockwise, while the polar graph plots the degree increasing counter-clockwise. To fit the distance measurements with polar plot degrees properly, I conduct some transformation to change the corresponding theta angle (in radian) with respect to each distance measurement. The code snippet for the theta transformation is given as below. Eventually, the polar distance plots for the four spots are shown below, which match the real area measurement situation correctly. </p>
                         
                                                 <p></p>
                             <script src="https://gist.github.com/zt88/12256d497c283daf2020fc38e852a9ad.js"></script>
@@ -150,19 +150,22 @@
                         
                         <p> In this way, the measurements from the distance sensor are converted to the inertial reference frame of the mapping area. Since each spot has its own x and y coordinates (in feet) with respect to the center of the area. The data points are hence calibrated by adding the coordinates of the spots which the data are measured on. It needs to be notice that the unit after conversion is in mm to match the distance measurement uint (1 foot = 304.8 mm).</p>
                         
-                        <p> Eventually, x and y coordinates of all the converted data points are combined into one single array respectively and plotted as below. </p>
-                        
-                        <p> </p>
-                        <img src="lab9_imgs/point_based.png" style="width:90%">
-                                                <span class="caption text-muted">Point-based Map</span>
-                        <p> </p>
-                        
                         <p> I write Python script to conduct the transformation process and plot the map, the code snippet is shown below. </p>
                         
                         <p></p>
                             <script src="https://gist.github.com/zt88/d904dd72ff2d68c417f6b462cf74ff97.js"></script>
                             <span class="caption text-muted">Python Script for Data Conversion & Map Plot</span>
                         <p></p>
+                        
+                        
+                        <p> Eventually, x and y coordinates of all the converted data points for each spot are plotted on the same figure with different colors as below. </p>
+                        
+                        <p> </p>
+                        <img src="lab9_imgs/point_based.png" style="width:90%">
+                                                <span class="caption text-muted">Point-based Map</span>
+                        <p> </p>
+                        
+
                         
                         
                         
