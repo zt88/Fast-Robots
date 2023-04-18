@@ -39,9 +39,9 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         <div class="post-heading">
-                            <h1>Lab8:</h1>
-                            <h1> Stunt! </h1>
-                            <h2 class="subheading">Drive as fast as possible and perform a stunt when approaching the wall.</h2>
+                            <h1>Lab 9:</h1>
+                            <h1> Mapping </h1>
+                            <h2 class="subheading">Create an area map based on ToF sensor measurements.</h2>
                             <span class="meta">
                                 Posted by
                                 <a href="about.html">Zhongqi Tao</a>
@@ -61,7 +61,7 @@
                         <p> The purpose of this map is to construct a 2D map of an area with obstacles based on the measurements obtained from ToF sensor. The area is setup in the lab with boxes as obstacles and wood boards as boundaries, shown in picture below. The robot is programmed to spin around on multiple spots placed within the area and collect distance readings when spinning. Eventualy, all the data from different spots are combined to create a point based map of the area, and a line based map is created by connecting points together. </p>
                         <p> </p>
                         <p> </p>
-                        <img src="lab8_imgs/ToF_dist.png" style="width:90%">
+                        <img src="lab9_imgs/area.jpg" style="width:90%">
                                                 <span class="caption text-muted">The Area to Create the Map</span>
                         <p> </p>
                         
@@ -80,89 +80,88 @@
                         
                         <p> Since I am running short of time, I decide to implement open loop control to make my robot spin around on the spots to record ToF sensor readings. After conducting several tests of the spinning on a spot in the area, my open loop control program is designed as below. </p>
                         <p></p>
-                            <script src="https://gist.github.com/zt88/aa4807c751d55c6ccebeaf94205ee465.js"></script>
+                            <script src="https://gist.github.com/zt88/89d682ef68dd3b4079e8f4559e86b45c.js"></script>
                             <span class="caption text-muted">Open Loop Control </span>
                         <p></p>
                         
-                        <p> I decide to collect 25 points during the 360 degree spinning, which means approximately 14 degrees per point, with this relatively high resolution, hopefully the points-based map can be accurate enough. </p>
-                        <p> The video below shows the open loop control implemented on my robot to make it spin on one spot collecting distance readings. </p>
+                        <p> I decide to collect 23 points during the 360 degree spinning, which means approximately 15.65 degrees per point, with this relatively high resolution, hopefully the points-based map can be accurate enough. </p>
+                        <p> The video below shows the open loop control implemented on my robot to make it spin on the spot 3 (5, 3) collecting distance readings. </p>
                         <p></p>
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/kceW1wQ4JYc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/LRFBwuuiE78" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                         <span class="caption text-muted">Open Loop Control</span>
                         <p></p>
                         
-                        <p> This open loop control is repeated on the five spots within the area. Below are plots for the implementation of open loop control on one spot. </p>
+                        <p> This open loop control is repeated on the five spots within the area. Below is the plot for the implementation of open loop control on the spot 3 where the distance data is plotted in a polar graph so that the measured distances from different directions are more intuitively demonstrated. </p>
+                        
+                        <p> </p>
                         <p> </p>
 
-                        <img src="lab8_imgs/ToF_dist.png" style="width:90%">
-                                                <span class="caption text-muted">Distance Data from ToF Sensor</span>
+                        <img src="lab9_imgs/spot3.png" style="width:90%">
+                                                <span class="caption text-muted">Distance Data in Polar Plot</span>
                         <p> </p>
                         
-                        <p> The distance data is replotted in a polar graph so that the measured distances from different directions are more intuitively demonstrated.  </p>
-                        <p> </p>
-
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
-                                                <span class="caption text-muted">Distance Data from Kalman Filter Prediction</span>
-                        <p> </p>
-                        
-                        <p> The PWM duty cycle percentage during the spinning process is always 80%. My robot spins 100 ms using this PWM for approximately 14 degrees. </p>
+                        <p> The PWM duty cycle percentage during the spinning process is always 80%. My robot spins 100 ms using this PWM for approximately 15.65 degrees. </p>
 
                         
                         
                         
                         <h2> Read out Distances </h2> 
-                        <p> Since there are five marked spots within the area, I execute my turn at each of them and get the measured distances. For each spot, I conduct the turn for twice with robot placed in the same orientation to verify the precision of collected distances. Eventually, the polar distance plots for the five spots are shown below. </p>
+                        <p> Since there are four marked spots within the area, I execute my turn at each of them and get the measured distances. For each spot, I conduct the turn for twice with robot placed in the same orientation to verify the precision of collected distances. It needs to be noticed that since I place my robot vertically towards the upper boundary of the area with my robot head facing forward, and my open loop control makes the robot spin clockwise, while the polar graph plots the degree increasing counter-clockwise. To fit the distance measurements with polar plot degrees properly, I conduct some transformation to change the corresponding theta angle (in radian) with respect to each distance measurements. The code snippet for the theta transformation is given as below. Eventually, the polar distance plots for the four spots are shown below, which match the real area measurement situation correctly. </p>
+                        
+                                                <p></p>
+                            <script src="https://gist.github.com/zt88/12256d497c283daf2020fc38e852a9ad.js"></script>
+                            <span class="caption text-muted">Theta Transformation for Polar Plots</span>
+                        <p></p>
+                        
                         
                         <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
-                                                <span class="caption text-muted">Polar Plot for spot (COORDINATE)</span>
-                        <p> </p>
-                        
-                        <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
-                                                <span class="caption text-muted">Polar Plot for spot (COORDINATE)</span>
-                        <p> </p>
-                        
-                        <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
-                                                <span class="caption text-muted">Polar Plot for spot (COORDINATE)</span>
+                        <img src="lab9_imgs/spot1.png" style="width:90%">
+                                                <span class="caption text-muted">Polar Plot for spot (-3, -2)</span>
                         <p> </p>
                         
                         <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
-                                                <span class="caption text-muted">Polar Plot for spot (COORDINATE)</span>
+                        <img src="lab9_imgs/spot2.png" style="width:90%">
+                                                <span class="caption text-muted">Polar Plot for spot (0, 3)</span>
                         <p> </p>
                         
                         <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
-                                                <span class="caption text-muted">Polar Plot for spot (COORDINATE)</span>
+                        <img src="lab9_imgs/spot3.png" style="width:90%">
+                                                <span class="caption text-muted">Polar Plot for spot (5, 3)</span>
                         <p> </p>
+                        
+                        <p> </p>
+                        <img src="lab9_imgs/spot4.png" style="width:90%">
+                                                <span class="caption text-muted">Polar Plot for spot (5, -3)</span>
+                        <p> </p>
+                        
                         
                         
                         
                         
                         <h2> Merge and Plot Readings </h2> 
-                        <p> After I have all the measured distances for each marked spots, they are converted into x and y coordinates, and combined together to form a point-based map with different colors. Since initially, the data points in polar plots are in theta-distance format, some mathmatical operations are needed to convert them into x and y coordinates format: </p>
+                        <p> After I have all the measured distances for each marked spot, they are converted into x and y coordinates, and combined together to form a point-based map with different colors. Since initially, the data points in polar plots are in theta-distance format, some mathmatical operations are needed to convert them into x and y coordinates format, the code snippet for this transformation is give as: </p>
                         
                         <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
+                        <script src="https://gist.github.com/zt88/e867eefd0c448c9ee896ddcf608caed9.js"></script>
                                                 <span class="caption text-muted">Math Operation to Convert to X-Y Coordinate</span>
                         <p> </p>
                         
-                        <p> After converting all the points into x and y coordinates, I can use the transformation matrices learnt from <a href="https://cei-lab.github.io/FastRobots-2023/lectures/FastRobots-2-TransformationMatrices.pdf">lecture 2</a> to convert the measurements from the distance sensor to the inertial reference frame of the mapping area. Since each spot has its own x and y coordinates (in feet) with respect to the center of the area. The data points are hence calibrated by adding the coordinates of the spots which the data are measured on. It needs to be notice that the unit after conversion is in mm to match the distance measurement uint (1 foot = 304.8 mm).</p>
+                        <p>where, <code>theta_num</code> is the previously transformed theta list containing radians for each distance measurements, <code>dist_num</code> is the distance measurements obtained from a spot, <code>x_list</code> and <code>y_list</code> are lists to store the transformed coordinates for each data point obtained by a distance measurement, and finally <code>spot_x</code> and <code>spot_y</code> are coordinates for the spot which are used to complement the distance based calculated coordinates to be equivalent to coordinates from the origin of the area. The <code>spot_x</code> and <code>spot_y</code> are actually number of tiles and are converted to mm (1 feet = 304.8 mm) when conducting coordinates transformation. </p>
+                        
+                        <p> In this way, the measurements from the distance sensor are converted to the inertial reference frame of the mapping area. Since each spot has its own x and y coordinates (in feet) with respect to the center of the area. The data points are hence calibrated by adding the coordinates of the spots which the data are measured on. It needs to be notice that the unit after conversion is in mm to match the distance measurement uint (1 foot = 304.8 mm).</p>
                         
                         <p> Eventually, x and y coordinates of all the converted data points are combined into one single array respectively and plotted as below. </p>
                         
                         <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
+                        <img src="lab9_imgs/point_based.png" style="width:90%">
                                                 <span class="caption text-muted">Point-based Map</span>
                         <p> </p>
                         
-                        <p> I write Python script to conduct the process above and the code snippet is shown below. </p>
+                        <p> I write Python script to conduct the transformation process and plot the map, the code snippet is shown below. </p>
                         
                         <p></p>
-                            <script src="https://gist.github.com/zt88/aa4807c751d55c6ccebeaf94205ee465.js"></script>
-                            <span class="caption text-muted">Python Script for Data Conversion & Validation</span>
+                            <script src="https://gist.github.com/zt88/d904dd72ff2d68c417f6b462cf74ff97.js"></script>
+                            <span class="caption text-muted">Python Script for Data Conversion & Map Plot</span>
                         <p></p>
                         
                         
@@ -170,17 +169,17 @@
                         
                         <h2> Line-based Map </h2>
                         <p> To convert the map into a format that can be used in the simulator in future labs, the actual positions of walls and obstacles are estimated based on the scatter plotted map above. After observation, I extract some spefic "boundary" points to form lists of start and end coordinates of wall and obstacles. The points in the lists are drew in lines on top of the points-based map. </p>
-                        <p> The lists of x and y coodinates for walls and obstacles I extract to form the line-based map are given as below. </p>
+                        <p> The lists of x and y coodinates for walls and boxes I extract to form the line-based map are given as below. </p>
                         
                                                 <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
+                        <script src="https://gist.github.com/zt88/1c9d0c6d500411238908180233594c99.js"></script>
                                                 <span class="caption text-muted">Lists for Line-based Map</span>
                         <p> </p>
                         
                         <p> The line-based map is hence plotted as below. </p>
                         
                                                                         <p> </p>
-                        <img src="lab8_imgs/Kalman_dist.png" style="width:90%">
+                        <img src="lab9_imgs/line_based.png" style="width:90%">
                                                 <span class="caption text-muted">Line-based Map</span>
                         <p> </p>
                         
