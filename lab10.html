@@ -61,12 +61,12 @@
                         <p> The purpose of this lab is to achieve robot locolization in a grid map using Bayes filter. In this lab, the same area map from lab 9 is built in the simulator and I will implement Bayes filter algorithm to try to track the real trajectory of the virtual robot moving in the simulator. </p>
                         <p> The Bayes filter algorithm will be built in this lab and its performance will be evalueated using the simulator to ensure it works properly, so that it can be deployed on the physical robot in the next lab. </p>
                         <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/simulator.png" style="width:90%">
                                                 <span class="caption text-muted">Simulator with Area Map & Virtual Robot</span>
                         <p> </p>
                         
                         <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/plotter.png" style="width:90%">
                                                 <span class="caption text-muted">Trajectory Plotter</span>
                         <p> </p>
                         
@@ -114,7 +114,7 @@
                         </ul>
                         
                         <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/3d_grid.jpg" style="width:90%">
                                                 <span class="caption text-muted">3D Discretized Grid Visual</span>
                         <p> </p>
                         
@@ -135,7 +135,7 @@
 
                         <p> The main task for this lab is to write the Python code to implement Bayes Filter Algorithm which can be summarized as below: </p>
                                                 <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/bayes-new.png" style="width:90%">
                                                 <span class="caption text-muted">Bayes Filter Algorithm</span>
                         <p> </p>
                         
@@ -182,19 +182,19 @@
                         <p> 3. Eventually, it rotates to a new angle (<code>delta_rot2</code>) to reach its final state. </p>
             
                                                                         <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/action.png" style="width:90%">
                                                 <span class="caption text-muted">Demonstration of Action</span>
                         <p> </p>
             
                         <p> The formulas to calculate each variables are given as below: </p>
                                                                         <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/compute-control.png" style="width:90%">
                                                 <span class="caption text-muted">Formulas to Compute Action</span>
                         <p> </p>
             
                         <p> Therefore, the <code>compute_control</code> function can be defined based on the formulas. </p>
                                                                                     <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/compute_control.png" style="width:90%">
                                                 <span class="caption text-muted">Compute_Control Function</span>
                         <p> </p>
                         
@@ -206,19 +206,19 @@
                         <p></p>
                         <h3> Odometry Motion Model </h3> 
                                                                           <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/action-model.png" style="width:90%">
                         <p> </p>
                         <p> This function calculates the probability of ending up with current state (<code>cur_pose</code>) given a control action (<code>u</code>) and robot's previous state (<code>prev_pose</code>). Here the given control action <code>u</code> can be different from the actual action computed using the previously defined function <code>compute_control</code> which can be named as actual action. </p>
                         <p> To compute the probability, Gaussian function is used to model noise with a mu which determines the mean and a sigma determines the standard deviation. Eventually, the probbility can be computed as: </p>
                                                                                                 <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/action_prob.png" style="width:90%">
                                                 <span class="caption text-muted">Probability Calculation Formula</span>
                         <p> </p>
                         <p> where, the sigma for each type of value is given in the BaseLocalization class as a member variable.  </p>
                         
                         <p> The function is implemented in Python as: </p>
                                                                                                             <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/odom_motion_model.png" style="width:90%">
                                                 <span class="caption text-muted">Odometry Motion Model Function</span>
                         <p> </p>
             
@@ -228,12 +228,12 @@
                         <p></p>
                         <h3> Prediction Step </h3> 
                                                                           <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/prediction.png" style="width:90%">
                         <p> </p>
                         <p> For now, I 've already had functions and variables to conduct prediction step of the Bayes filter. In this prediction step function, two loops are required which are both responsible for going through all the possible 3-dimensional states. The function can hence update <code>bel_bar</code> for each state, and <code>P(x_t | u_t, x_t-1)</code> of each state can be computed using the defined function <code>odom_motion_model</code> </p>
                         <p> The <code>prediction_step</code> is defined as: </p>
                                                                                                 <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/prediction_step.png" style="width:90%">
                                                 <span class="caption text-muted">Prediction Step Function</span>
                         <p> </p>
            
@@ -243,12 +243,12 @@
                         <p></p>
                         <h3> Sensor Model </h3> 
                                                                           <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/sensor.png" style="width:90%">
                         <p> </p>
                         <p> This function computes the probability of correct sensor distance measurements given current state. Similar as before, the probability is obtained using Gaussian function. The function requires an input <code>obs</code> containing true (correct) measurements of distance in a state. The sensor measured distances can be obtained by calling <code>loc.obs_range_data</code> variable. Therefore, the probabilities of each out of 18 sensor measurements can be calculated and stored in one array.  </p>
                         <p> The <code>sensor_model</code> function is defined as: </p>
                                                                                                 <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/sensor_model.png" style="width:90%">
                                                 <span class="caption text-muted">Sensor Model Function</span>
                         <p> </p>
             
@@ -258,13 +258,13 @@
                         <p></p>
                         <h3> Update Step </h3> 
                                                                           <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
+                        <img src="lab10_imgs/update.png" style="width:90%">
                         <p> </p>
                         <p> Now that I have defined function for sensor model, it is time to implement the final update step of the Bayes filter. It needs to be noticed that to use the <code>sensor_model</code> function, the <code>obs</code> parameter needs to manually defined by calling the <code>mapper.get_views</code>. The final sensor probability is calculated by multiplying the probabilities obtained by <code>sensor_model</code> function. By multiplying the sensor probability and belief of each current state, the the current state belief can be updated. </p>
                         <p> The <code>update_step</code> function is defined as: </p>
                                                                                                 <p> </p>
-                        <img src="lab9_imgs/area.jpg" style="width:90%">
-                                                <span class="caption text-muted">Sensor Model Function</span>
+                        <img src="lab10_imgs/update_step.png" style="width:90%">
+                                                <span class="caption text-muted">Update Step Function</span>
                         <p> </p>
             
             
