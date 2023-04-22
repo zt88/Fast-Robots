@@ -249,6 +249,12 @@
                         <img src="lab10_imgs/sensor.png" style="width:30%">
                         <p> </p>
                         <p> This function computes the probability of correct sensor distance measurements given current state. Similar as before, the probability is obtained using Gaussian function. The function requires an input <code>obs</code> containing true (correct) measurements of distance in a state. The sensor measured distances can be obtained by calling <code>loc.obs_range_data</code> variable. Therefore, the probabilities of each out of 18 sensor measurements can be calculated and stored in one array.  </p>
+                        
+                        <p> </p>
+                        <img src="lab10_imgs/sensor_model_algorithm.png" style="width:80%">
+                                                <span class="caption text-muted">Sensor Model Algorithm</span>
+                        <p> </p>
+
                         <p> The <code>sensor_model</code> function is defined as: </p>
                                                                                                 <p> </p>
                         <img src="lab10_imgs/sensor_model.png" style="width:100%">
@@ -275,19 +281,38 @@
             
             
                         <h2> Result of Bayes Filter Implementation </h2> 
-                        <p> results </p>
-            
-            
-            
-            
-            
-            
+                        <p> After the Bayes Filter has been fully developed, now it is time to implement it to evaluate its performance. In the video below there are three lines with different colors plotted in the "Trajectory Plotter" as robot moves, </p>
+                        <p> 1. A pre-programmed trajecory is used as the <b>ground truth</b> to test the Bayes Filter, which is shown as the <font color="green">green</font> line.  </p>
+                        <p> 2. The <font color="red">red</font> line represents <b>odometry reading</b>, which includes lots of noise and is the most inaccurate one. </p>
+                        <p> 3. The <font color="blue">blue</font> line is the <b>belief</b> computed by the designed Bayes Filter algorithm, which is quite close to the ground truth line. </p>
+
                         <p></p>
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/LRFBwuuiE78" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        <span class="caption text-muted">Open Loop Control</span>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/e16QiDhzah4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Robot Grid Localization using Bayes Filter</span>
                         <p></p>
                         
-                        
+                        <p></p>
+                        <p></p>
+                        <p> Furthermore, the prior belief (<code>bel_bar</code>) is plotted on the plotter as well to show the prediction step results. The lighter cell (white) means higher probability of the robot location. Generally, the prediction step works well to predict most real locations of the robot. </p>
+
+                        <p></p>
+                        <iframe width="640" height="360" src="https://www.youtube.com/embed/zTJXsoaF5tg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        <span class="caption text-muted">Robot Grid Localization using Bayes Filter with bel_bar shown</span>
+                        <p></p>
+
+
+                        <p></p>
+                        <p></p>
+                        <p> The most probable states for each movement are also included as below. It can be seen that the though in the prediction step the "POS ERROR" can be a bit high, after the update step, the "POS ERROR" becomes quite acceptable, meaning that the believed robot location is quite close to the ground truth location. </p>
+                        <p> However, by referring the statistics below and combined with the first video's demonstration, it is noticed that as the robot moves close to the obstacles, the Bayes Filter computed robot location can be affected and hence the error becomes more apparently in the video. It can be inffered that the complexity of the environment can affect the performance of the Bayes Filter in robot grid localization. With many obstacles or other features that can obstruct the robot's view or affect sensor readings on the robot, the filter may struggle to produce accurate estimates of the robot's position. </p>
+                        <p> </p>
+                        <p> </p>
+                        <script src="https://gist.github.com/zt88/2b39ec944b060ff37c8326aaa5ea7735.js"></script>
+                        <span class="caption text-muted">State Statistics</span>
+                        <p> </p>
+
+
+
                         <br></br>
                         <p></p>
                         <p>
