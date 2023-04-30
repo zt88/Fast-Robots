@@ -58,258 +58,106 @@
                 <div class="row gx-4 gx-lg-5 justify-content-center">
                     <div class="col-md-10 col-lg-8 col-xl-7">
                         
-                        <p> The purpose of this lab is to achieve robot locolization in a grid map using Bayes filter. In this lab, the same area map from lab 9 is built in the simulator and I will implement Bayes filter algorithm to try to track the real trajectory of the virtual robot moving in the simulator. </p>
-                        <p> The Bayes filter algorithm will be built in this lab and its performance will be evalueated using the simulator to ensure it works properly, so that it can be deployed on the physical robot in the next lab. </p>
+                        <p> In lab 10, I have learnt about implementing Bayes filter to achieve grid localization of the robot in the simulator. The results of Bayes filter estimation is shown as the <font color="blue">blue</font> line in the plot below, while the <font color="green">green</font> line is the ground truth and the <font color="red">red</font> line is the odometry reading. It has been shown that the estimated trajectory pretty much follows the ground truth well with acceptable errors. </p>
                         <p> </p>
-                        <img src="lab10_imgs/simulator.png" style="width:90%">
-                                                <span class="caption text-muted">Simulator with Area Map & Virtual Robot</span>
+                        <img src="lab11_imgs/localization_sim.png" style="width:90%">
+                                                <span class="caption text-muted">Grid Localization in Simulator</span>
                         <p> </p>
-                        
-                        <p> </p>
-                        <img src="lab10_imgs/plotter.png" style="width:90%">
-                                                <span class="caption text-muted">Trajectory Plotter</span>
-                        <p> </p>
+                        <p> Though everything happened in lab 10 using simulator has demonstrated good results, I still need to implement Bayes filter algorithm on my real robot, run it in the area similar to the one on simulator and conduct robot localization, so that to verify its performance in the real world. </p>
+                        <p> The localization task performed in this lab is simplified. The robot is mannually placed at the the four spots in the area, and for each spot, the robot will spin for 360 degrees while collecting ToF distance measurements for every 20 degrees. Then the collected distance measurements are sent to laptop and hence robot localization can be performed by feeding these data to Bayes algorithm. Since it has been shown in previous lab that the prediction step of Bayes filter is not accurate enough for some places in the area, in this lab only the update step is used to estimate the location of the robot. </p>
                         
                         
                         
                         <br></br>
                         <p></p>
                         <h1> Lab Task: Grid Localization </h1> 
+                       
+                        <p> Though the Bayes filter algorithm is performed on the laptop, it requires the distance data to conduct effective estimation. Hence some new functions are defined on both Artemis side and laptop side.  </p>
                         
                         
                         <p></p>
                         <p></p>
                         
-                        <h2> Grid in Simulator </h2> 
+                        <h2> Robot Implementation (Artemis side) </h2> 
+                    
+                        <p> To meet the demands of this lab, some functions are redefined on the Artemis side so that to transmit the data more effectively: </p>
                         
-                        <p> Robot localization in this lab basically means determine the state (coordinates and orientation) of the robot after each movement. The robot state is defined as 3 dimensional in the simulator and is given by <code>(x, y, θ)</code>. The robot’s world (grid map) is a continuous space that spans from: </p>
-
-                         <ul class="list-unstyled">
-                         <ul>
-                            <li>[-1.6764, +1.9812) meters or [-5.5, 6.5) feet in the x direction.</li>
-                            <li>[-1.3716, +1.3716) meters or [-4.5, +4.5) feet in the y direction.</li>
-                            <li>[-180, +180) degrees along the theta axis.</li>
-                         </ul>
-                         </ul>
-                        
-                        <p> The virtual robot shown in the simulator image before is at the state of <code>(0, 0, 0)</code> (initial state). The <b>X-axis</b> increases from left to right, the <b>Y-axis</b> increases from bottom to top and the <b>Theta-axis</b> increases if robot spins clockwise and decreases if robot spins counter-clockwise. </p>
-                        
-                        
-                        
-                        <p></p>
-                        <p></p>
-                        <h2> Discretized Grid Space </h2> 
-                        
-                        <p> Theoretically there can be infinitely many poses for the robot within this bounded space. Thus the continuous state space is descretized into a finite 3D grid space, which can reduce the accuracy of the estimated state as the robot states within the same grid cell cannot be distinguished effectively, but this allows the belief over a finite set of states to be computed in reasonable time. </p>
-                        
-                        
-                        <p> The grid map is descretized in to cells that are identical in size. The size of each grid cell (i.e resolution of the grid) along the <code>(x, y, θ)</code> are 0.3048 m, 0.3048 meters and 20 degrees respectively. Therefore, the continous state space is discretized into cells as: </p>
                         
                         <ul class="list-unstyled">
                          <ul>
-                            <li> X-axis cell: [0, 12); 0.3048 m per cell. </li>
-                            <li> Y-axis cell: [0, 9); 0.3048 m per cell. </li>
-                            <li> Theta-axis cell: [0, 18); 20 degrees per cell. </li>
+                            <li> <b>spin_control</b>: This function is basically modified from lab 9 when the distance measurements are needed for mapping task. The robot is set to spin counter-clockwise for 360 degrees and gets ToF distance measurements every 20 degrees. The data are stored in the <code>frontDist</code> array. The function also stores time of measurement and angles of measurement in two arrays respectively. </li>
+                            <li> <b>send_data</b>: The function requires two arguments telling the type of retrieved data and the index of the data in the corresponding data type of array. It needs to be noticed that for each call of this function, it only send one data from the specified array. </li>
                          </ul>
                         </ul>
                         
-                        <p> </p>
-                        <img src="lab10_imgs/3d_grid.jpg" style="width:90%">
-                                                <span class="caption text-muted">3D Discretized Grid Visual</span>
-                        <p> </p>
-                        
-                        
-                        
+                        <p> The reason that I redefined the <code>send_data</code> function instead of using the old version which is based on event handler (callback function) in Python is that since both data collecting function and data sending function are both called in the same Python function on laptop side, the <code>async</code> feature in Python must be added so that the event handler can work properly to get all the transmitted data once it is available, otherwise the code may continue directly before all the measurement data has been fully transmitted by callback function and the transmission process may be suspended. In that case, the Bayes filter algorithm can perform badly based on incomplete dataset. </p>
+                        <p> By implementing this newly defined <code>send_data</code> function in a for loop on the laptop side, the code will be blocked at the loop util all the measurement data has been transmitted completely. </p>
+                    
+                        <p> The code snippet for these functions are shown as below: </p>
                         <p></p>
+                        <script src="https://gist.github.com/zt88/3c57625e7041011f471d84ae9c028949.js"></script>
+                            <span class="caption text-muted">Artemis Side Redefined Functions</span>
                         <p></p>
-                        <h2> Bayes Filter Algorithm (theory) </h2> 
-                        
-                        <p> In this lab, there are <b>two steps</b> for each robot movement that combines to form the trajectory:  </p>
-                        
-                        <p> 1. A cell-based action characterized by three parameters: <code> rotation 1, translation, rotation 2</code>.  </p>
-                        
-                        <p> 2. An observation process which takes ToF sensor readings every 20 degrees by spinning 360 degrees and yield an array containing 18 distance measurements.  </p>
+                    
                         
                         <br></br>
-                        <p> The total number of discretized grid cells along each axis are (12,9,18), where each cell stores the probability of the robot’s presence at that cell. The belief of the robot is therefore represented by the set of probabilities of each grid cell and these probabilities should sum to 1. The Bayes filter algorithm updates the probability of the robot’s presence in each grid cell as the robot movement progresses. The grid cell(s) with the highest probability (after each iteration of the bayes filter) represents the most probable pose of the robot. Thus the most probable cells across different time steps characterize the robot’s trajectory. </p>
+                        <h2> Python Implementation (Computer side) </h2> 
+                        
+                        <p> Basically the Artemis side defined function are called in the <code>perform_observation_loop</code> function in the class <code>RealRobot</code>. For each spot in the area, the function is called to return the 360 degrees spinned distance measurement data, so that the Bayes filter algorithm can update the location estimation based on these data. </p>
+                        <p> The code snippet for this function is shown as below where, as mentioned before, the <code>send_data</code> function is called in a for loop to retrieve the 18 distance data one by one. </p>
+                
+                        <p></p>
+                        <script src="https://gist.github.com/zt88/b197cda5dd5e569f37a6e57eb7557dd9.js"></script>
+                                <span class="caption text-muted">Python Function</span>
+                        <p></p>
 
-                        <p> The main task for this lab is to write the Python code to implement Bayes Filter Algorithm which can be summarized as below: </p>
-                                                <p> </p>
+                
+                
+                
+                        <br></br>
+                        <h2> Localization at 4 Spots </h2> 
+                        <p> After the functions are defined properly, the localization task is conducted on the four specified spots in the area: <code>(-3, -2, 0), (0, 3, 0), (5, 3, 0), (5, -3, 0)</code>, which are the same spots as in lab 9. </p>
+            
+                        <h3> Spot (-3, -2, 0) </h3> 
+            
+                        <p> </p>
                         <img src="lab10_imgs/bayes-new.png" style="width:90%">
-                                                <span class="caption text-muted">Bayes Filter Algorithm</span>
+                                                <span class="caption text-muted">Bayes Filter localization for Spot (-3, -2, 0)</span>
                         <p> </p>
-                        
-                        <p> <b>Inputs</b> </p>
-                        <p> where the function requires three inputs:  </p>
-                        <p> 1. <code>bel(x_t-1)</code>: representing the belief of the previous state of the robot. It is a 3D matrix containing probabilities of the robot's previous state in each dimension. </p>    
-                        <p> 2. <code>u_t</code>: representing control inputs (rotation 1, translation and rotation 2) that make robot do a movement. </p>
-                        <p> 3. <code>z_t</code>: the 18 sensor readings of current robot state, which is obtained by the second step of a robot movement as mentioned before. </p>
-                        
-                        <br></br>
-                        <p> The algorithm basically contains two steps: prediction step and update step.</p>    
-                        
-                        <p> <b>Prediction Step</b> </p>
+            
 
-                        <p> 1. <code>x_t</code>: describes the state of the robot in timestep t (current state), which includes all possible discretized states in 3 dimensions. </p>
-                        <p> 2. <code>bel_bar(x_t)</code>: means the prior belief for the possibility of a robot being in state <code>x_t</code>. </p>
-                        <p> 3. <code>P(x_t | u_t, x_t-1)</code>: means the robot transition probability (action model). This is the probability that the robot end up in a current state (x_t) given a control input (u_t) and a previous state (x_t-1). </p>            
-                        <p> To conclude, for each current state (x_t), this step sums up the probabilities of ending up with current state from all possible previous states with a given odometry motion. </p>
-                            
-                 
-                        <p> <b>Update Step</b> </p>
+            
+                        <h3> Spot (0, 3, 0) </h3> 
 
-                        <p> 1. <code>bel(x_t)</code>: updated belief for current state. </p>
-                        <p> 2. <code>eta(x_t)</code>: is the normalization symbol, meaning that the result needs to be normalized. </p>
-                        <p> 3. <code>P(z_t | x_t)</code> represents the sensor measurement probability (sensor model). This is the probability that the sensor readings obtained by the second step of a single robot movement are correct given the robot is at current state. </p>
-                        <p> To conclude, for each current state, this step multiplies prior belief (<code>bel_bar</code>) with the prababilities of correct distance measurements at current state, then the result is normalized. </p>
-                        
-                        
-                        
-                        <p></p>
-                        <p></p>
-            <br></br>
-                        <h2> Bayes Filter Algorithm (Python code implementation) </h2> 
-                        
-                        <p> After the principle of Bayes filter algorithm is explained, it is implemented using Python and eventually tested in the simulator. </p>  </p>
-                        
-                        <p></p>
-                        <p></p>
-                        <h3> Compute_Control </h3> 
-                        
-                        <p> The first function I need to implement is the one to compute the actual action the robot conduct to move from one state to the other (the first step of the robot movement). </p>
-                        <p> As the image demonstrates below, the action basically contains three steps:  </p>
-                        <p> 1. The robot needs to rotate for a certain angle (<code>delta_rot1</code>) so that it is heading towards the next state position. </p>
-                        <p> 2. Then it translates (<code>delta_trans</code>) to a new grid cell on the map. </p>
-                        <p> 3. Eventually, it rotates to a new angle (<code>delta_rot2</code>) to reach its final state. </p>
-            
-                                                                        <p> </p>
-                        <img src="lab10_imgs/action.png" style="width:90%">
-                                                <span class="caption text-muted">Demonstration of Action</span>
                         <p> </p>
-            
-                        <p> The formulas to calculate each variables are given as below: </p>
-                                                                        <p> </p>
-                        <img src="lab10_imgs/compute-control.png" style="width:80%">
-                                                <span class="caption text-muted">Formulas to Compute Action</span>
-                        <p> </p>
-            
-                        <p> Therefore, the <code>compute_control</code> function can be defined based on the formulas. </p>
-                                                                                    <p> </p>
-                        <img src="lab10_imgs/compute_control.png" style="width:100%">
-                                                <span class="caption text-muted">Compute_Control Function</span>
-                        <p> </p>
-                        
-                        <p> The function returns the actual action in the form of <code>delta_rot_1, delta_trans, delta_rot_2</code>. </p>
-                        
-                        
-            
-                        <p></p>
-                        <p></p>
-    <br></br>
-                        <h3> Odometry Motion Model </h3> 
-                                                                          <p> </p>
-                        <img src="lab10_imgs/action-model.png" style="width:50%">
-                        <p> </p>
-                        <p> This function calculates the probability of ending up with current state (<code>cur_pose</code>) given a control action (<code>u</code>) and robot's previous state (<code>prev_pose</code>). Here the given control action <code>u</code> can be different from the actual action computed using the previously defined function <code>compute_control</code> which can be named as actual action. </p>
-                        <p> To compute the probability, Gaussian function is used to model noise with a mu which determines the mean and a sigma determines the standard deviation. Eventually, the probbility can be computed as: </p>
-                                                                                                <p> </p>
-                        <img src="lab10_imgs/action_prob.png" style="width:90%">
-                                                <span class="caption text-muted">Probability Calculation Formula</span>
-                        <p> </p>
-                        <p> where, the sigma for each type of value is given in the BaseLocalization class as a member variable.  </p>
-                        
-                        <p> The function is implemented in Python as: </p>
-                                                                                                            <p> </p>
-                        <img src="lab10_imgs/odom_motion_model.png" style="width:100%">
-                                                <span class="caption text-muted">Odometry Motion Model Function</span>
-                        <p> </p>
-            
-            
-            
-                        <p></p>
-                        <p></p>
-<br></br>
-                        <h3> Prediction Step </h3> 
-                                                                          <p> </p>
-                        <img src="lab10_imgs/prediction.png" style="width:90%">
-                        <p> </p>
-                        <p> For now, I 've already had functions and variables to conduct prediction step of the Bayes filter. In this prediction step function, two loops are required which are both responsible for going through all the possible 3-dimensional states. The function can hence update <code>bel_bar</code> for each state, and <code>P(x_t | u_t, x_t-1)</code> of each state can be computed using the defined function <code>odom_motion_model</code> </p>
-                        <p> The <code>prediction_step</code> is defined as: </p>
-                                                                                                <p> </p>
-                        <img src="lab10_imgs/prediction_step.png" style="width:100%">
-                                                <span class="caption text-muted">Prediction Step Function</span>
-                        <p> </p>
-           
-            
-                        <br></br>
-                        <p></p>
-                        <p></p>
-                        <h3> Sensor Model </h3> 
-                                                                          <p> </p>
-                        <img src="lab10_imgs/sensor.png" style="width:30%">
-                        <p> </p>
-                        <p> This function computes the probability of correct sensor distance measurements given current state. Similar as before, the probability is obtained using Gaussian function. The function requires an input <code>obs</code> containing true (correct) measurements of distance in a state. The sensor measured distances can be obtained by calling <code>loc.obs_range_data</code> variable. Therefore, the probabilities of each out of 18 sensor measurements can be calculated and stored in one array.  </p>
-                        
-                        <p> </p>
-                        <img src="lab10_imgs/sensor_model_algorithm.png" style="width:80%">
-                                                <span class="caption text-muted">Sensor Model Algorithm</span>
+                        <img src="lab10_imgs/bayes-new.png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter localization for Spot (0, 3, 0)</span>
                         <p> </p>
 
-                        <p> The <code>sensor_model</code> function is defined as: </p>
-                                                                                                <p> </p>
-                        <img src="lab10_imgs/sensor_model.png" style="width:100%">
-                                                <span class="caption text-muted">Sensor Model Function</span>
-                        <p> </p>
-            
-            
-            
-                        <p></p>
-                        <p></p>
-<br></br>
-                        <h3> Update Step </h3> 
-                                                                          <p> </p>
-                        <img src="lab10_imgs/update.png" style="width:80%">
-                        <p> </p>
-                        <p> Now that I have defined function for sensor model, it is time to implement the final update step of the Bayes filter. It needs to be noticed that to use the <code>sensor_model</code> function, the <code>obs</code> parameter needs to manually defined by calling the <code>mapper.get_views</code>. The final sensor probability is calculated by multiplying the probabilities obtained by <code>sensor_model</code> function. By multiplying the sensor probability and belief of each current state, the the current state belief can be updated. </p>
-                        <p> The <code>update_step</code> function is defined as: </p>
-                                                                                                <p> </p>
-                        <img src="lab10_imgs/update_step.png" style="width:100%">
-                                                <span class="caption text-muted">Update Step Function</span>
-                        <p> </p>
-            <br></br>
-            
-            
-            
-                        <h2> Result of Bayes Filter Implementation </h2> 
-                        <p> After the Bayes Filter has been fully developed, now it is time to implement it to evaluate its performance. In the video below there are three lines with different colors plotted in the "Trajectory Plotter" as robot moves, </p>
-                        <p> 1. A pre-programmed trajecory is used as the <b>ground truth</b> to test the Bayes Filter, which is shown as the <font color="green">green</font> line.  </p>
-                        <p> 2. The <font color="red">red</font> line represents <b>odometry reading</b>, which includes lots of noise and is the most inaccurate one. </p>
-                        <p> 3. The <font color="blue">blue</font> line is the <b>belief</b> computed by the designed Bayes Filter algorithm, which is quite close to the ground truth line. </p>
 
-                        <p></p>
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/e16QiDhzah4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        <span class="caption text-muted">Robot Grid Localization using Bayes Filter</span>
-                        <p></p>
-                        
-                        <p></p>
-                        <p></p>
-                        <p> Furthermore, the prior belief (<code>bel_bar</code>) is plotted on the plotter as well to show the prediction step results. The lighter cell (white) means higher probability of the robot location. Generally, the prediction step works well to predict most real locations of the robot. </p>
+                        <h3> Spot (5, 3, 0) </h3> 
 
-                        <p></p>
-                        <iframe width="640" height="360" src="https://www.youtube.com/embed/zTJXsoaF5tg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        <span class="caption text-muted">Robot Grid Localization using Bayes Filter with bel_bar shown</span>
-                        <p></p>
+            
+                        <p> </p>
+                        <img src="lab10_imgs/bayes-new.png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter localization for Spot (5, -, 0)</span>
+                        <p> </p>
 
 
-                        <p></p>
-                        <p></p>
-                        <p> The most probable states for each movement are also included as below. It can be seen that the though in the prediction step the "POS ERROR" can be a bit high, after the update step, the "POS ERROR" becomes quite acceptable, meaning that the believed robot location is quite close to the ground truth location. </p>
-                        <p> However, by referring the statistics below and combined with the first video's demonstration, it is noticed that as the robot moves close to the obstacles, the Bayes Filter computed robot location can be affected and hence the error becomes more apparently in the video. It can be inffered that the complexity of the environment can affect the performance of the Bayes Filter in robot grid localization. With many obstacles or other features that can obstruct the robot's view or affect sensor readings on the robot, the filter may struggle to produce accurate estimates of the robot's position. </p>
+                        <h3> Spot (5, -3, 0) </h3> 
+
+            
                         <p> </p>
+                        <img src="lab10_imgs/bayes-new.png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter localization for Spot (5, -3, 0)</span>
                         <p> </p>
-                        <script src="https://gist.github.com/zt88/2b39ec944b060ff37c8326aaa5ea7735.js"></script>
-                        <span class="caption text-muted">State Statistics</span>
-                        <p> </p>
+            
+            
+            
+            
+            
+            
+            
 
 
 
