@@ -116,46 +116,83 @@
                 
                         <br></br>
                         <h2> Localization at 4 Spots </h2> 
-                        <p> After the functions are defined properly, the localization task is conducted on the four specified spots in the area: <code>(-3, -2, 0), (0, 3, 0), (5, 3, 0), (5, -3, 0)</code>, which are the same spots as in lab 9. </p>
+                        <p> After the functions are defined properly, the localization task is conducted on the four specified spots in the area: <code>(-3, -2, 0), (0, 3, 0), (5, 3, 0), (5, -3, 0)</code>, which are the same spots as in lab 9. It needs to be noticed that the Bayes Filter algorithm only prints the believed robot location in blue point, while to print the ground truth in green point on the plotter, the <code>get_pose</code> function needs to be implemented for each of the four spots, telling the plotter that the exact true location the spots are supposed to be. The code below shows an example if the spot location is (5, -3), where the unit of this coordinate is the number of tiles. To convert the unit to meter which matches the plotter unit, the coordinate needs to be multiplied with 0.3048.</p>
+                                    <p> </p>
+                        <img src="lab11_imgs/unit_conv.png" style="width:90%">
+                                                <span class="caption text-muted">Ground Truth Location</span>
+                        <p> </p>            
+            
             
                         <h3> Spot (-3, -2, 0) </h3> 
-            
+                        
+                        <p> From the plot below we can see that the Bayes Filter estimated spot (blue point) is quite close to the ground truth (green point). However, since the plotter map only shows the x and y coordinates, it is better to check the Bayes Filter output to see the odometry information and the probability it predicts. </p>
+                
                         <p> </p>
-                        <img src="lab10_imgs/bayes-new.png" style="width:90%">
-                                                <span class="caption text-muted">Bayes Filter localization for Spot (-3, -2, 0)</span>
+                        <img src="lab11_imgs/(-3,-2).png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter Localization for Spot (-3, -2, 0)</span>
                         <p> </p>
             
+                        <p> The plot below shows the Bayes Filter LOG message where the fifth line gives the distance measurements obtained from the front ToF sensor, the <code>Bel_index</code> line gives the index of predicted points and its probability which is 1.0 here, indicating that the algorithm is confident about the robot's location prediction, though there is actually an error between estimation and ground truth. Finally, the last line gives the predicted coodinates and angle state of the robot. The first two digits are x and y coordinate in the map and its unit is in meters, to compare it with the spot coordinate more intuitively, just divide them by 0.3048. The third digit, angle, is 130 degree which is abit far away from the initial state (0 degree) after 360 degrees of spinning. The error might result from my open loop control which can make robot spin more than expected.</p>
+                                    <p> </p>
+                        <img src="lab11_imgs/(-3,-2)b.png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter Message for Spot (-3, -2, 0)</span>
+                        <p> </p>
 
             
                         <h3> Spot (0, 3, 0) </h3> 
 
+                        <p> The plot for this spot demonstrates a wonderful estimation made by Bayes algorithm since the predicted point is completely overlapped with the ground truth point. </p>
+                        
                         <p> </p>
-                        <img src="lab10_imgs/bayes-new.png" style="width:90%">
-                                                <span class="caption text-muted">Bayes Filter localization for Spot (0, 3, 0)</span>
+                        <img src="lab11_imgs/(0,3).png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter Localization for Spot (0, 3, 0)</span>
                         <p> </p>
+            
+                        <p> The result is verified by the Bayes algorithm output, showing that the probability is over 0.95 and the coordinate after conversion is almost same as (0, 3). However, the angle estimation error is still a bit high.  </p>
 
+                                    <p> </p>
+                        <img src="lab11_imgs/(0,3)b.png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter Message for Spot (0, 3, 0)</span>
+                        <p> </p>
+            
+            
+            
 
                         <h3> Spot (5, 3, 0) </h3> 
-
+                        
+                        <p> The plot below for spot (5, 3) also gives an estimation with a small error. Both x and y coordinates are off by on grid approximately. It is likely that the distance measurement is affected by the obstacle there, meanwhile, as the left side and bottom side walls are far away from the spot, the long distance measurement can result more errors. </p>
             
                         <p> </p>
-                        <img src="lab10_imgs/bayes-new.png" style="width:90%">
-                                                <span class="caption text-muted">Bayes Filter localization for Spot (5, -, 0)</span>
+                        <img src="lab11_imgs/(5,3).png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter localization for Spot (5, 3, 0)</span>
                         <p> </p>
+            
+                        <p> According to the Bayes output, the angle estimation is 50 degrees which is a little better than previous estimation but still may be affected by my control system. </p>
 
+                                    <p> </p>
+                        <img src="lab11_imgs/(5,3)b.png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter Message for Spot (5, 3, 0)</span>
+                        <p> </p>
+            
 
                         <h3> Spot (5, -3, 0) </h3> 
-
+                        
+                        <p> The plot below shows that the there is an error on y-axis between estimation and ground truth. It is highly possible resulted from the inaccurate long distance measurement fron the spot to the top wall. </p>
             
                         <p> </p>
-                        <img src="lab10_imgs/bayes-new.png" style="width:90%">
+                        <img src="lab11_imgs/(5,-3).png" style="width:90%">
                                                 <span class="caption text-muted">Bayes Filter localization for Spot (5, -3, 0)</span>
                         <p> </p>
             
+                        <p> The message below gives an estimated final angle of 10 degrees which is quite close to supposed 0 degree. </p>
+                                    <p> </p>
+                        <img src="lab11_imgs/(5,-3)b.png" style="width:90%">
+                                                <span class="caption text-muted">Bayes Filter Message for Spot (5, -3, 0)</span>
+                        <p> </p>
             
             
-            
-            
+                        <p> </p>
+                        <p>To conclude, the spots with the requirement of longer distance measurement are more likely get an Bayes localization with an error, such as (5, -3). It is because the ToF sensor is not stable when measuring long distance, and the reading can be noisier, while given the finite resolution of the ToF reading, it is likely that an noisy reading can be collected during the measurement process. Besides, from lab 10 I have learnt that the distance measurements from a spot closer than obstacles may be negatively affected by the existence of the obstacle as well. The complexity of the environment can affect the performance of the Bayes Filter in robot grid localization. With many obstacles or other features that can obstruct the robot's view or affect sensor readings on the robot, the filter may struggle to produce accurate estimates of the robot's position. This may well explain the error appears on the spot (5, 3) and (-3, -2). </p>
             
             
 
